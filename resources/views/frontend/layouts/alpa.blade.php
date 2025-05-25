@@ -1,7 +1,7 @@
 {{-- Platform Logoları Başlangıç --}}
 @if(isset($platformsGlobal) && $platformsGlobal->isNotEmpty())
 <div class="container mx-auto py-3 px-4">
-    <div class="hidden lg:flex items-center justify-center text-white space-x-3 sm:space-x-4">
+    <div class="flex flex-wrap items-center justify-center text-white space-x-2 sm:space-x-4">
         @foreach($platformsGlobal->take(8) as $platform)
             <a href="{{ route('frontend.platform.items', $platform->slug) }}" title="{{ $platform->name }}" class="hover:opacity-80 transition-opacity duration-150">
                 @if($platform->logo_image_path)

@@ -50,9 +50,9 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="card-details text-white p-3 w-full">
-                                                        <h3 class="text-overflow card-header text-base font-semibold">{{ $item->title }}</h3>
-                                                        <div class="text-overflow card-subheader text-xs text-gray-400">
+                                                    <div class="card-details text-white p-3 w-full h-28 flex flex-col justify-between">
+                                                        <h3 class="card-header text-base font-semibold overflow-hidden text-ellipsis whitespace-normal" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">{{ $item->title }}</h3>
+                                                        <div class="card-subheader text-xs text-gray-400 overflow-hidden text-ellipsis whitespace-normal" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
                                                             @foreach ($item->genres->take(3) as $singleGenre) {{-- İlk 3 genre --}}
                                                                 {{ $loop->first ? '' : ', ' }}
                                                                 {{ $singleGenre->name }}

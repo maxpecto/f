@@ -12,6 +12,7 @@ use App\Models\Settings;
 use App\Models\User;
 use Auth;
 
+use App\Models\PreRollVideo;
 use Trackers;
 
 class DetailSeriesController extends Controller
@@ -32,6 +33,12 @@ class DetailSeriesController extends Controller
         $allepisodes = Episodes::where('series_id',$series->id)->get();
         $uniqueSeason = $allepisodes->unique('season_id')->all();
 
+        // İlk gösterilecek bölümü belirle
+        $firstEpisodeToShow = Episodes::where('series_id', $series->id)
+                                    ->orderBy('season_id', 'asc')
+                                    ->orderBy('episode_id', 'asc')
+                                    ->first();
+
         $relatedseries = Items::inRandomOrder()->where('type','series')->whereHas('genres', function ($q) use ($series) {
 		    $q->whereIn('name', $series->genres->pluck('name'));
 		})
@@ -44,7 +51,9 @@ class DetailSeriesController extends Controller
         ->get('https://api.themoviedb.org/3/tv/'.$series->tmdb_id.'/images')
         ->json();
 
-		return view('frontend.single-series',compact('series','allepisodes','uniqueSeason','download','relatedseries','tmdbdata','totalLikes','totalDislikes'));
+        $activePreRollVideo = PreRollVideo::where('is_active', true)->first();
+
+		return view('frontend.single-series',compact('series','allepisodes','uniqueSeason','download','relatedseries','tmdbdata','totalLikes','totalDislikes', 'firstEpisodeToShow', 'activePreRollVideo'));
     }
 
     public function getSeasonsEpisodes($series_id,$season_id){

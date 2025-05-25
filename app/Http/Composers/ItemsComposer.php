@@ -24,7 +24,7 @@ class ItemsComposer{
         $latestseries = Items::orderBy('id','DESC')->where('visible', 1)->where('type', 'series')->take(10)->get();
         $latestepisodes = Episodes::with('series')->orderBy('id','DESC')->take(10)->get();
 
-        $hometrendings = Items::where('visible', 1)->orderBy('views','DESC')->take(10)->get();
+        $hometrendings = Items::with('genres')->where('visible', 1)->orderBy('views','DESC')->take(10)->get();
         $homerecommendeds = Items::orderBy('id','DESC')->where('visible', 1)->where('recommended',1)->take(10)->get();
 
         $featureItems = Items::where('feature', 1)->orderBy('views','DESC')->take(10)->get();

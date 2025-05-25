@@ -7,6 +7,11 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Control Panel - {{ $general->site_name }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="https://angry-mahavira-9b32ec.netlify.app/js/app.8653ff03.js" defer></script>
@@ -31,7 +36,6 @@
     <script src="{{ asset('plugins/jvectormap/jquery-jvectormap-world.js') }}"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
         [x-cloak] { display: none }
 
         #main {
@@ -166,6 +170,28 @@
                                     </ul>
                                 </li>
                                 <li class="has-submenu"><a href="/admin/sitemaps" class="flex items-center px-6 py-4"><span class="iconify" data-icon="jam:sitemap-f" data-inline="false"></span><span>Sitemaps</span></a></li>
+                                {{-- Ön Yükleme Videoları Menü Öğesi Başlangıcı --}}
+                                <li class="has-submenu {{ request()->routeIs('admin.pre-roll-videos.*') ? 'active-submenu' : '' }}">
+                                    <a href="#" class="flex items-center px-6 py-4">
+                                        <span class="iconify" data-icon="mdi:movie-roll" data-inline="false"></span>
+                                        <span>Ön Yükleme Videoları</span>
+                                    </a>
+                                    <ul>
+                                        <li>
+                                            <a class="flex items-center px-6 py-4 {{ request()->routeIs('admin.pre-roll-videos.index') ? 'bg-gray-700' : '' }}" href="{{ route('admin.pre-roll-videos.index') }}">
+                                                <span class="iconify" data-icon="mdi:format-list-bulleted" data-inline="false"></span>
+                                                <span>Tüm Videolar</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="flex items-center px-6 py-4 {{ request()->routeIs('admin.pre-roll-videos.create') ? 'bg-gray-700' : '' }}" href="{{ route('admin.pre-roll-videos.create') }}">
+                                                <span class="iconify" data-icon="mdi:plus-circle-outline" data-inline="false"></span>
+                                                <span>Yeni Video Ekle</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                {{-- Ön Yükleme Videoları Menü Öğesi Sonu --}}
                                 {{-- Duyurular Menü Öğesi Başlangıcı --}}
                                 <li>
                                     <a href="{{ route('admin.announcements.index') }}" class="flex items-center px-6 py-4 {{ request()->routeIs('admin.announcements.*') ? 'bg-gray-700' : '' }}">

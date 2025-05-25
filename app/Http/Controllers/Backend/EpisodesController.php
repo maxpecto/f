@@ -55,31 +55,52 @@ class EpisodesController extends BackendController
     public function store(Request $request){
         $this->validate($request,[
             'series_list' => 'required',
-            'episode_unique_id' => 'unique:episodes,episode_unique_id',
+            'series_episode' => 'required|integer',
+            // 'episode_unique_id' => 'unique:episodes,episode_unique_id', // unique_id'yi aşağıda farklı oluşturacağız
         ], [
             'series_list.required' => 'You Must Select Series!',
-            'episode_unique_id.unique' => 'You had added this episode already!'
+            'series_episode.required' => 'Episode number is required.',
+            'series_episode.integer' => 'Episode number must be an integer.',
+            // 'episode_unique_id.unique' => 'You had added this episode already!'
         ]);
 
         $episodes = new Episodes();
         $episodes->series_id = $request->series_list;
-        if($request->tmdb_series_seasons == null){
-            if($request->series_seasons != null){
-                $seasonid = $request->series_seasons;
-            }
-        }else{
-            $seasonid = $request->tmdb_series_seasons;
+
+        $season_number = null;
+        if (!empty($request->new_season_number)) {
+            $season_number = intval($request->new_season_number);
+        } elseif (!empty($request->season_id)) {
+            $season_number = intval($request->season_id);
         }
-        $episodes->season_id = $seasonid;
-        if($request->tmdb_series_episode == null){
-            if($request->series_episode != null){
-                $episodeid = $request->series_episode;
-            }
-        }else{
-            $episodeid = $request->tmdb_series_episode;
+
+        if (is_null($season_number) || $season_number <= 0) {
+            return redirect()->back()->withErrors(['season_id' => 'Season selection or new season number is required and must be a positive integer.'])->withInput();
         }
-        $episodes->episode_id = $episodeid;
-        $episodes->episode_unique_id = intval($request->series_list . $seasonid . $episodeid);
+
+        $episodes->season_id = $season_number;
+        $episodes->episode_id = intval($request->series_episode); // Blade'de name="series_episode" yaptık
+        
+        // episode_unique_id'yi series_id . season_id . episode_id şeklinde (arada dolgu olmadan) oluşturma
+        $potential_unique_id_string = $request->series_list . $season_number . intval($request->series_episode);
+        $potential_unique_id = intval($potential_unique_id_string);
+
+        // Benzersizlik kontrolü, bu sefer potential_unique_id üzerinden
+        $existing_episode_check = Episodes::where('episode_unique_id', $potential_unique_id)->first();
+        if ($existing_episode_check) {
+             return redirect()->back()->withErrors(['episode_unique_id' => 'This episode with unique ID ' . $potential_unique_id . ' (Series: ' . $request->series_list . ', Season: ' . $season_number . ', Episode: ' . $request->series_episode . ') already exists.'])->withInput();
+        }
+        // VEYA series_id, season_id, episode_id kombinasyonuna göre de kontrol edilebilir.
+        $existing_episode_combination_check = Episodes::where('series_id', $request->series_list)
+                                    ->where('season_id', $season_number)
+                                    ->where('episode_id', intval($request->series_episode))
+                                    ->first();
+        if ($existing_episode_combination_check) {
+             return redirect()->back()->withErrors(['episode_unique_id' => 'This episode (Series ID: ' . $request->series_list . ', Season: ' . $season_number . ', Episode: ' . $request->series_episode . ') combination already exists.'])->withInput();
+        }
+
+        $episodes->episode_unique_id = $potential_unique_id; 
+
         $episodes->name = $request->episode_name;
         $episodes->description = $request->episode_description;
         $episodes->air_date = $request->episode_airdate;
@@ -229,12 +250,35 @@ class EpisodesController extends BackendController
 
     //CODE Get Series Seasons
     public function get_series_seasons($series_id){
+        // Bu fonksiyon TMDB API'sini kullanıyordu, şimdilik yorum satırı yapıyorum.
+        // Eğer hala TMDB'den sezon çekmek isterseniz, bu yorumu kaldırabilirsiniz.
+        /*
         $tmdb = Items::find($series_id);
         $tmdb_id = $tmdb->tmdb_id;
         $data = Http::withToken(config('services.tmdb.token'))
         ->get('https://api.themoviedb.org/3/tv/'.$tmdb_id.'?language='.config('services.tmdb.lang'))
         ->json();
         return $data;
+        */
+        // Bunun yerine lokal sezonları getiren yeni bir metodumuz olacak.
+        // Bu metodun çağrıldığı yeri kontrol edip get_series_local_seasons'a yönlendirmek gerekebilir.
+        // Şimdilik boş bir array döndürelim veya hata mesajı.
+        return response()->json([]); // Veya hata mesajı
+    }
+
+    // Yeni metod: Lokal veritabanından bir diziye ait sezonları getirir
+    public function get_series_local_seasons($series_id)
+    {
+        if (!Items::find($series_id)) {
+            return response()->json(['error' => 'Series not found'], 404);
+        }
+
+        $seasons = Episodes::where('series_id', $series_id)
+                            ->select('season_id')
+                            ->distinct()
+                            ->orderBy('season_id', 'asc')
+                            ->get();
+        return response()->json($seasons);
     }
 
     //CODE Get Series Seasons/Episodes

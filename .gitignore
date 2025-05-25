@@ -1,0 +1,29 @@
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode/
+/site_yedegi_*.zip
+
+# Kullanıcı tarafından yüklenen ve sürekli değişen medya dosyaları
+/public/assets/movies/poster/*
+/public/assets/series/backdrop/*
+/public/assets/series/poster/*
+
+# Episode görselleri
+/public/assets/episodes/backdrop/*
+
+# Oluşturulan test görselleri (eğer varsa)
+/public/assets/movies/optimized_posters/*
+
+# Veritabanı yedekleri
+*.sql 

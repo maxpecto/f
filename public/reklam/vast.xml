@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="3.0">
+  <Ad id="1">
+    <InLine>
+      <AdSystem>CustomAdSystem</AdSystem>
+      <AdTitle>Film Avcısı Reklamı</AdTitle>
+      <Impression><![CDATA[https://partner.naysbahisaffiliates.com/imp/naysbahis/1266]]></Impression>
+
+      <Creatives>
+        <Creative sequence="1" id="1">
+          <Linear skipoffset="00:00:05">
+            <Duration>00:00:10</Duration>
+            <TrackingEvents>
+              <Tracking event="start"><![CDATA[https://filmavcisi1.com/track/start]]></Tracking>
+              <Tracking event="complete"><![CDATA[https://filmavcisi1.com/track/complete]]></Tracking>
+            </TrackingEvents>
+            <VideoClicks>
+              <ClickThrough><![CDATA[https://partner.naysbahisaffiliates.com/imp/naysbahis/1266]]></ClickThrough>
+            </VideoClicks>
+            <MediaFiles>
+              <MediaFile delivery="progressive" type="video/mp4" width="1280" height="720" scalable="true" maintainAspectRatio="true">
+                <![CDATA[https://filmavcisi1.com/reklam/tekreklam.mp4]]>
+              </MediaFile>
+            </MediaFiles>
+          </Linear>
+        </Creative>
+      </Creatives>
+    </InLine>
+  </Ad>
+</VAST>

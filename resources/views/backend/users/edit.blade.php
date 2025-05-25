@@ -53,7 +53,7 @@
     <span>Edit User</span>
 </div>
 <section class="w-full text-white rounded-b">
-    {!! Form::model($users, ['route' => ['members-update',$users->id],'method'=>'put','enctype' => 'multipart/form-data','class' => 'form profile']) !!}
+    {!! Form::model($users, ['route' => ['admin.members-update',$users->id],'method'=>'put','enctype' => 'multipart/form-data','class' => 'form profile']) !!}
     <div class="bg-gray-700 justify-between items=center border-1 border-t border-gray-700 p-5 w-full xl:flex space-x-0 xl:space-x-6 space-y-6 xl:space-y-0">
         <div class="w-full xl:w-3/12 space-y-6">
             <div class="w-full field image">

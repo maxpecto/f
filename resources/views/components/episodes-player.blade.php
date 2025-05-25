@@ -55,12 +55,12 @@
                                 volumeStep: 0.1,
                                 seekStep: 5,
                                 enableModifiersForNumbers: false
-                            },
+                            }/*,
                             vastClient : {
                                 adTagUrl: '{!! base64_decode($ads->site_vast_url) !!}',
                                 adCancelTimeout : 5000,
                                 adsEnabled : true
-                            }
+                            }*/
                         }
                     };
                     var player = videojs('playerVideojs', videoOptions);
@@ -195,12 +195,12 @@
                         volumeStep: 0.1,
                         seekStep: 5,
                         enableModifiersForNumbers: false
-                    },
+                    }/*,
                     vastClient : {
                         adTagUrl: '{!! base64_decode($ads->site_vast_url) !!}',
                         adCancelTimeout : 5000,
                         adsEnabled : true
-                    }
+                    }*/
                 }
             };
             var player = videojs('playerVideojs', videoOptions);

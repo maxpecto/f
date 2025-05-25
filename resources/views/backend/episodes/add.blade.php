@@ -61,24 +61,22 @@
                 <div class="w-full select">
                     <select id="series_list" name="series_list" type="text" value="" placeholder="Select Series" ></select>
                 </div>
-                <button type="button" class="w-full bg-green-500 p-2 rounded-b flex items-center justify-center"><div class="spin animate-spin hidden"><span class="iconify" data-icon="mdi:loading" data-inline="false"></span></div><div class="ml-2">GENERATE SEASONS<div></button>
+                <button type="button" id="generate_seasons_btn" class="w-full bg-green-500 p-2 rounded-b flex items-center justify-center"><div class="spin animate-spin hidden"><span class="iconify" data-icon="mdi:loading" data-inline="false"></span></div><div class="ml-2">LOAD SEASONS<div></button>
             </div>
 
-            <div class="w-full" id="series_seasons">
-                <label><h4 class="w-full mb-2 font-medium">Select Season</h4></label>
-                <div class="w-full select">
-                    <select id="series_seasons" name="tmdb_series_seasons" type="text" value="" placeholder="Select Season" ></select>
+            <div class="w-full" id="series_seasons_container">
+                <label><h4 class="w-full mb-2 font-medium">Select Season or Add New</h4></label>
+                <div class="w-full select mb-2">
+                    <select id="season_id_select" name="season_id" type="text" placeholder="Select Season"></select>
                 </div>
+                <input class="input w-full px-2 py-1 rounded mb-2" type="number" name="new_season_number" placeholder="Or Enter New Season Number" value="">
                 <button type="button" class="w-full bg-green-500 p-2 rounded-b flex items-center justify-center hidden"><div class="spin animate-spin hidden"><span class="iconify" data-icon="mdi:loading" data-inline="false"></span></div><div class="ml-2">GENERATE EPISODES<div></button>
             </div>
 
-            <div class="w-full" id="series_episode">
-                <label><h4 class="w-full mb-2 font-medium">Select Episode</h4></label>
-                <div class="w-full select hidden">
-                    <select id="series_episode" name="tmdb_series_episode" type="text" value="" placeholder="Select Episode" ></select>
-                </div>
+            <div class="w-full" id="series_episode_container">
+                <label><h4 class="w-full mb-2 font-medium">Enter Episode Number</h4></label>
                 <div class="w-full addown">
-                    <input class="input w-full px-2 py-1 rounded" type="text" name="series_seasons" placeholder="Enter Episode" value="">
+                    <input class="input w-full px-2 py-1 rounded" type="number" name="series_episode" placeholder="Enter Episode Number" value="">
                 </div>
                 <button type="button" class="w-full bg-green-500 p-2 rounded-b flex items-center justify-center hidden"><div class="spin animate-spin hidden"><span class="iconify" data-icon="mdi:loading" data-inline="false"></span></div>GENERATE EPISODES</button>
             </div>
@@ -219,139 +217,69 @@
             sortField   : 'text',
         });
         var seriesList = $series[0].selectize;
-        $.getJSON('../data/get_series', function(genresData) {
-            $.each(genresData, function(val, key) {
+        $.getJSON('../data/get_series', function(data) {
+            $.each(data, function(val, key) {
                     seriesList.addOption({ value: key.id, text: key.title + ' [ TMDB ID : '+ key.tmdb_id +' ]' });
             });
         });
 
         //Series Season list
-        var $season = $('.select #series_seasons').selectize({
+        var $season_select = $('#season_id_select').selectize({
+            create: false, // Mevcut sezonları listeleyeceğimiz için false kalabilir
+            placeholder: 'Select Season'
+        });
+        var seasonSelectList = $season_select[0].selectize;
+
+        //Series Episode list (Bu kısım TMDB'den bölüm çekiyordu, şimdilik kaldırabilir veya yorum satırı yapabiliriz.)
+        /* var $episode = $('.select #series_episode').selectize({
             create: false,
         });
-        var seasonList = $season[0].selectize;
+        var episodeList = $episode[0].selectize; */
 
-        //Series Episode list
-        var $episode = $('.select #series_episode').selectize({
-            create: false,
-        });
-        var episodeList = $episode[0].selectize;
-
-        // Search Season
-        $('#series_id button').click(function(){
-            var seriesID = $('#series_id select[name="series_list"]').val();
-            if(seriesID > 0){
-                fetchSeason(seriesID);
+        // Load Seasons button click event
+        $('#generate_seasons_btn').click(function(){
+            var seriesID = seriesList.getValue(); // Get selected series ID
+            if(seriesID && seriesID > 0){
+                // Clear previous season options and new season input
+                seasonSelectList.clear();
+                seasonSelectList.clearOptions();
+                $('input[name="new_season_number"]').val('');
+                fetchLocalSeasons(seriesID);
             }else{
-                alert('TMDB added series can only be genrated seasons!');
+                alert('Please select a series first!');
             }
         });
 
-        function fetchSeason(id){
-            $('#series_id .spin').removeClass('hidden');
-            $.ajax({
-                url: 'get_series/'+id,
-                type: 'get',
-                dataType: 'json',
-                success: function(data) {
-                    if(data['name'] === undefined){
-                        $('#series_id .spin').addClass('hidden');
-                        //not valid series id!
-                        alert(data['status_message']);
-                    }
-                    else{
-                        $('#series_seasons .select').removeClass('hidden');
-                        $('#series_seasons button').removeClass('hidden');
-                        $('#series_seasons .addown').addClass('hidden');
-                        var seasons;
-                        for (seasons = 1; seasons <= data['number_of_seasons']; seasons++) {
-                            seasonList.addOption({ value: seasons, text: "Season "+seasons });
+        function fetchLocalSeasons(series_id){
+            seasonSelectList.load(function(callback) {
+                $.ajax({
+                    url: '../episodes/get_series_local_seasons/' + series_id, // Yeni endpoint'imiz
+                    type: 'GET',
+                    success: function(res) {
+                        if (res && res.length) {
+                            seasonSelectList.clearOptions(); // Önceki seçenekleri temizle
+                            res.forEach(function(season) {
+                                seasonSelectList.addOption({value: season.season_id, text: 'Season ' + season.season_id});
+                            });
+                            seasonSelectList.refreshOptions(false); // Selectize'ı yenile
+                            callback(res); // Gerekirse callback'i çağır
+                        } else {
+                            seasonSelectList.clearOptions();
+                            seasonSelectList.addOption({value: '', text: 'No seasons found for this series. Add new below.'});
+                            seasonSelectList.refreshOptions(false);
+                            callback([]);
                         }
-                        $('#series_id .spin').addClass('hidden');
+                    },
+                    error: function() {
+                        alert('Error loading seasons.');
+                        callback([]);
                     }
-                }
+                });
             });
         }
-        //Fetch End
 
-        // Fetch Episode
-        $('#series_seasons button').click(function(){
-            var seriesSeasonID = $('#series_seasons select[name="tmdb_series_seasons"]').val();
-            var seriesID = $('#series_id select[name="series_list"]').val();
-            fetchEpisodes(seriesSeasonID,seriesID);
-        });
-        function fetchEpisodes(seriesSeasonID,seriesID){
-            $('#series_seasons .spin').removeClass('hidden');
-            $.ajax({
-                url: 'get_series/'+seriesID+'/'+seriesSeasonID,
-                type: 'get',
-                dataType: 'json',
-                success: function(data){
-                    $('#series_episode .select').removeClass('hidden');
-                    $('#series_episode button').removeClass('hidden');
-                    $('#series_episode .addown').addClass('hidden');
-                    $.each(data.episodes, function(val, key) {
-                        episodeList.addOption({ value: key.episode_number, text: "Episode "+key.episode_number });
-                    });
-                    $('#series_seasons .spin').addClass('hidden');
-                }
-            });
-        }
-        //Fetch End
-
-        // Fetch Episode Data
-        $('#series_episode button').click(function(){
-            var seriesSeasonID = $('#series_seasons select[name="tmdb_series_seasons"]').val();
-            var seriesEpisodeID = $('#series_episode select[name="tmdb_series_episode"]').val();
-            var seriesID = $('#series_id select[name="series_list"]').val();
-
-            fetchEpisodesData(seriesSeasonID,seriesEpisodeID,seriesID);
-        });
-        function fetchEpisodesData(seriesSeasonID,seriesEpisodeID,seriesID){
-            $('#series_episode .spin').removeClass('hidden');
-            $.ajax({
-                url: 'get_series/'+seriesID+'/'+seriesSeasonID+'/'+seriesEpisodeID,
-                type: 'get',
-                dataType: 'json',
-                success: function(data){
-                    //title
-                    $('input[name="episode_name"]').val(data['name']);
-                    //desc
-                    $('textarea[name="episode_description"]').val(data['overview']);
-                    //Air Date
-                    $('input[name="episode_airdate"]').val(data['air_date']);
-
-                    //Backdrop Image
-                    if (data['still_path'] == null) {
-                        var episode_image = '{{ URL::asset('assets/image/default_backdrop.jpg') }}';
-                    }else{
-                        var episode_image = 'https://image.tmdb.org/t/p/w1280'+data['still_path'];
-                    }
-                    //Backdrop Image
-                    $('input[name="episode_image_url"]')
-                    .val(episode_image);
-                    $('#episode_image')[0].src  = episode_image;
-
-                    $('#series_episode .spin').addClass('hidden');
-                }
-            });
-        }
-        //Fetch End
-
-        //On Form Submit Check Episode already added!
-        $(":submit").click(function () {
-            var seriesSeasonID = $('#series_seasons select[name="tmdb_series_seasons"]').val();
-            var seriesEpisodeID = $('#series_episode select[name="tmdb_series_episode"]').val();
-            var seriesID = $('#series_id select[name="series_list"]').val();
-            var seriesSeasonID1 = $('#series_seasons input[name="series_seasons"]').val();
-            var seriesEpisodeID1 = $('#series_episode input[name="series_episode"]').val();
-            if(!seriesSeasonID){
-                $('input[name="episode_unique_id"]').val(seriesID+seriesSeasonID1+seriesEpisodeID1);
-            }else{
-                $('input[name="episode_unique_id"]').val(seriesID+seriesSeasonID+seriesEpisodeID);
-            }
-        });
-
+        // TMDB'den bölüm getirme fonksiyonu (fetchEpisode) yorum satırı yapıldı veya kaldırıldı.
+        // Kullanıcı bölüm numarasını manuel girecek.
 
     });
 

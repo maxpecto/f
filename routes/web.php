@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Settings;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\PlatformController;
+use App\Http\Controllers\Admin\PreRollVideoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -236,6 +237,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'App\Http\Middleware\CheckAdm
 
     // Platforms (Yeni Eklendi)
     Route::resource('platforms', PlatformController::class);
+
+    // Pre-roll Videos (Yeni Eklendi)
+    Route::resource('pre-roll-videos', PreRollVideoController::class);
 
     //Settings
     Route::get('/settings', [App\Http\Controllers\Backend\SettingsController::class, 'general'])->name('general-settings');

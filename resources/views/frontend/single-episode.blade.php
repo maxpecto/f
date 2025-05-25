@@ -71,6 +71,25 @@
         -ms-filter: brightness(1.2) !important;
         filter: brightness(1.2) !important;
     }
+    #custom-preroll-play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10008; /* Diğer overlay'lerden uygun şekilde ayarlanmış */
+        padding: 12px 25px;
+        font-size: 18px; /* Boyut ayarlanabilir */
+        cursor: pointer;
+        background-color: rgba(0,0,0,0.6);
+        color: white;
+        border: 1.5px solid white;
+        border-radius: 8px;
+        display: none; /* JS ile gösterilecek */
+        transition: opacity 0.3s ease; /* Yumuşak geçiş için */
+    }
+    #custom-preroll-play-button:hover {
+        background-color: rgba(0,0,0,0.8);
+    }
 </style>
 
 @endsection
@@ -84,7 +103,25 @@
         <div class="space-y-8 xl:w-9/12 w-full">
 
             {{-- Player  --}}
+            {{-- Ön Yükleme Video Oynatıcısı Başlangıcı --}}
+            @if(isset($activePreRollVideo) && $activePreRollVideo)
+                <div id="preroll-player-container" 
+                     data-preroll-video="{{ json_encode($activePreRollVideo->toArray(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) }}"
+                     style="background-color: black; position: relative; width: 100%; margin: auto; aspect-ratio: 16/9; display: none;">
+                    <video id="preroll-video-element" width="100%" height="100%" preload="auto" style="display: block; width: 100%; height: 100%;" playsinline></video>
+                    <button id="custom-preroll-play-button">OYNAT</button>
+                    <a id="preroll-skip-button" href="#" style="display:none; position:absolute; bottom:20px; right:20px; padding:8px 15px; background:rgba(0,0,0,0.7); color:white; text-decoration:none; z-index:10010; border-radius: 5px; font-size: 0.9em;">
+                        Reklamı Atla
+                    </a>
+                    <a id="preroll-click-overlay" href="#" target="_blank" style="position:absolute; top:0; left:0; width:100%; height: calc(100% - 50px); z-index:10005; cursor:pointer; display:none;"></a>
+                </div>
+            @endif
+            {{-- Ön Yükleme Video Oynatıcısı Sonu --}}
+
+            {{-- Ana İçerik Oynatıcısı --}}
+            <div id="main-player-container" >
             <x-episodes-player :episode="$episode" :player="$player" :allepisodesforseasons="$allepisodesforseasons"/>
+            </div>
 
             {{-- Details--}}
             <div class="w-full flex lg:px-10 px-0 text-white lg:space-x-6 space-x-0">
@@ -490,38 +527,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/embed.min.js"></script>
 <script>
 	$(function(){
-        //Player
-        // $('#episode-players span').on('click', function(event){
-        //     event.preventDefault();
-        //     $('#episode-players span').removeClass("bg-yellow-400");
-        //     $(this).addClass("bg-yellow-400");
-        // });
-        // if($('.ui.embed').data('url').length){
-        //     $('.ui.embed').embed();
-        // }
-        // $('#episode-players a').on('click', function(){
-        //     $('#episode-player .embed')
-        //     .attr('data-url', $(this).data('url'))
-        //     .embed();
-
-        //     $('#episode-players span').removeClass("bg-yellow-400");
-        // });
+        // Player (Orijinal player ile ilgili yorumlu kodlar varsa buraya eklenebilir, şimdilik boş bırakıyorum)
+        // ...
 
         $('.parent-container').magnificPopup({
-            delegate: 'a', // child items selector, by clicking on it popup will open
+            delegate: 'a',
             type: 'image',
             gallery: {
-                enabled: true, // set to true to enable gallery
-                preload: [0,2], // read about this option in next Lazy-loading section
+                enabled: true,
+                preload: [0,2],
                 navigateByImgClick: true,
-                arrowMarkup: '<button title="%title%" type="button" class="mfp-arrow mfp-arrow-%dir%"></button>', // markup of an arrow button
-                tPrev: 'Previous (Left arrow key)', // title for left button
-                tNext: 'Next (Right arrow key)', // title for right button
-                tCounter: '<span class="mfp-counter">%curr% of %total%</span>' // markup of counter
+                arrowMarkup: '<button title="%title%" type="button" class="mfp-arrow mfp-arrow-%dir%"></button>',
+                tPrev: 'Previous (Left arrow key)',
+                tNext: 'Next (Right arrow key)',
+                tCounter: '<span class="mfp-counter">%curr% of %total%</span>'
             }
         });
 
-        //Reports
         var $reports = $('#report_id').selectize({
             create: false,
             sortField: {
@@ -529,144 +551,230 @@
                 direction: 'desc'
             },
         });
-        var report = $reports[0].selectize;
 
         $('#comment_btn button').on('click', function(event){
             event.preventDefault();
-
             $comment_id = $(this).data("commentid");
-
-            console.log($comment_id);
-
+            console.log("Comment ID for spoiler: ", $comment_id);
             $("#comment_spoiler_"+$comment_id).addClass("hidden");
             $("#comment_box_"+$comment_id).removeClass("hidden");
-
-            //$('#comment_box_'+$comment_id).removeClass("hidden");
-
-            //$(this).find('#spoiler-btn').addClass('hidden');
-            //$(this).addClass("hidden");
-
         });
 
-	})
-</script>
-
-<script>
-    $(function() {
+        // Slick Carousel Ayarları
         $('#poster-carousel .carousel-items').slick({
-            infinite: false,
-            slidesToScroll: 5,
-            slidesToShow: 5,
-            dots: false,
-            arrows: false,
-            responsive: [
-            {
-                breakpoint: 1100,
-                settings: {
-                    slidesToShow: 5,
-                    slidesToScroll: 5
-                }
-            },
-            {
-                breakpoint: 1000,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2
-                }
-            }]
+            infinite: false, slidesToScroll: 5, slidesToShow: 5, dots: false, arrows: false,
+            responsive: [{breakpoint: 1100, settings: {slidesToShow: 5, slidesToScroll: 5}}, {breakpoint: 1000, settings: {slidesToShow: 3, slidesToScroll: 3}}, {breakpoint: 600, settings: {slidesToShow: 2, slidesToScroll: 2}}]
         });
-
-        $('#poster-carousel .menu span:first').on('click', function() {
-            $('#poster-carousel .carousel-items').slick('slickPrev');
-        });
-
-        $('#poster-carousel .menu span:last').on('click', function() {
-            $('#poster-carousel .carousel-items').slick('slickNext');
-        });
+        $('#poster-carousel .menu span:first').on('click', function() { $('#poster-carousel .carousel-items').slick('slickPrev'); });
+        $('#poster-carousel .menu span:last').on('click', function() { $('#poster-carousel .carousel-items').slick('slickNext'); });
 
         $('#backdrop-carousel .carousel-items').slick({
-            infinite: false,
-            slidesToScroll: 3,
-            slidesToShow: 3,
-            dots: false,
-            arrows: false,
-            responsive: [
-            {
-                breakpoint: 1100,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3
-                }
-            },
-            {
-                breakpoint: 1000,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1
-                }
-            }]
+            infinite: false, slidesToScroll: 3, slidesToShow: 3, dots: false, arrows: false,
+            responsive: [{breakpoint: 1100, settings: {slidesToShow: 3, slidesToScroll: 3}}, {breakpoint: 1000, settings: {slidesToShow: 2, slidesToScroll: 2}}, {breakpoint: 600, settings: {slidesToShow: 1, slidesToScroll: 1}}]
         });
-
-        $('#backdrop-carousel .menu span:first').on('click', function() {
-            $('#backdrop-carousel .carousel-items').slick('slickPrev');
-        });
-
-        $('#backdrop-carousel .menu span:last').on('click', function() {
-            $('#backdrop-carousel .carousel-items').slick('slickNext');
-        });
+        $('#backdrop-carousel .menu span:first').on('click', function() { $('#backdrop-carousel .carousel-items').slick('slickPrev'); });
+        $('#backdrop-carousel .menu span:last').on('click', function() { $('#backdrop-carousel .carousel-items').slick('slickNext'); });
 
         $('#casts-carousel .carousel-items').slick({
-            infinite: false,
-            slidesToScroll: 8,
-            slidesToShow: 8,
-            dots: false,
-            arrows: false,
-            responsive: [
-            {
-                breakpoint: 1100,
-                settings: {
-                    slidesToShow: 8,
-                    slidesToScroll: 8
-                }
-            },
-            {
-                breakpoint: 1000,
-                settings: {
-                    slidesToShow: 5,
-                    slidesToScroll: 5
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3
-                }
-            }]
+            infinite: false, slidesToScroll: 8, slidesToShow: 8, dots: false, arrows: false,
+            responsive: [{breakpoint: 1100, settings: {slidesToShow: 8, slidesToScroll: 8}}, {breakpoint: 1000, settings: {slidesToShow: 5, slidesToScroll: 5}}, {breakpoint: 600, settings: {slidesToShow: 3, slidesToScroll: 3}}]
         });
+        $('#casts-carousel .menu span:first').on('click', function() { $('#casts-carousel .carousel-items').slick('slickPrev'); });
+        $('#casts-carousel .menu span:last').on('click', function() { $('#casts-carousel .carousel-items').slick('slickNext'); });
+    }); // Orijinal $(function() sonu
 
-        $('#casts-carousel .menu span:first').on('click', function() {
-            $('#casts-carousel .carousel-items').slick('slickPrev');
-        });
+    // ------------- PRE-ROLL JS BAŞLANGICI (BİRLEŞTİRİLMİŞ VE DATA ATTRIBUTE KULLANILACAK)-------------
+    console.log('Pushed JS block started (single-episode)');
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM Content Loaded - Pre-roll script start (single-episode)');
+        const preRollPlayerContainer = document.getElementById('preroll-player-container');
+        const mainPlayerContainer = document.getElementById('main-player-container');
 
-        $('#casts-carousel .menu span:last').on('click', function() {
-            $('#casts-carousel .carousel-items').slick('slickNext');
+        let isVideoStartedOnce = false; // Videonun ilk kez başlatılıp başlatılmadığını takip et
+
+        function switchToMainContent() {
+            const preRollVideoElement = document.getElementById('preroll-video-element');
+            console.log("switchToMainContent çağrıldı (single-episode).");
+            if (preRollVideoElement && preRollVideoElement.src && preRollVideoElement.src !== '' && !preRollVideoElement.paused) {
+                preRollVideoElement.pause();
+            }
+            if(preRollPlayerContainer) preRollPlayerContainer.style.display = 'none';
+            if(mainPlayerContainer) mainPlayerContainer.style.display = 'block';
+
+            const videoJsPlayerEl = mainPlayerContainer ? mainPlayerContainer.querySelector('#playerVideojs') : null;
+            const iframePlayerEl = mainPlayerContainer ? mainPlayerContainer.querySelector('#playerEmbeded') : null;
+
+            if (videoJsPlayerEl && typeof videojs !== 'undefined' && videojs.getPlayer(videoJsPlayerEl.id)) {
+                const mainVideoPlayer = videojs.getPlayer(videoJsPlayerEl.id);
+                console.log("Ana Video.js oynatıcısı bulundu ve oynatılıyor (single-episode).");
+                // mainVideoPlayer.play(); // Kullanıcı etkileşimi sonrası oynatılmalı
+            } else if (iframePlayerEl && iframePlayerEl.querySelector('iframe')) {
+                const iframe = iframePlayerEl.querySelector('iframe');
+                const iframeSrc = iframe.getAttribute('src');
+                console.log("Ana iframe oynatıcısı bulundu (single-episode):", iframeSrc);
+            } else {
+                console.log("Ana oynatıcı (Video.js veya iframe) main-player-container içinde bulunamadı (single-episode).");
+            }
+        }
+
+        if (preRollPlayerContainer && preRollPlayerContainer.hasAttribute('data-preroll-video')) {
+            const preRollVideoDataString = preRollPlayerContainer.getAttribute('data-preroll-video');
+            let activePreRollVideo = null;
+            try {
+                if (preRollVideoDataString && preRollVideoDataString.trim() !== '') {
+                    activePreRollVideo = JSON.parse(preRollVideoDataString);
+                }
+            } catch (e) {
+                console.error("Pre-roll data parse error (single-episode):", e, preRollVideoDataString);
+                switchToMainContent();
+                return; 
+            }
+
+            console.log("activePreRollVideo (from data attribute - single-episode.blade.php):", activePreRollVideo);
+
+            const preRollVideoElement = document.getElementById('preroll-video-element');
+            const preRollSkipButton = document.getElementById('preroll-skip-button');
+            const clickOverlay = document.getElementById('preroll-click-overlay');
+            const customPlayButton = document.getElementById('custom-preroll-play-button');
+
+            function playPreRollAndSetupOverlays() {
+                if (preRollVideoElement.paused) {
+                    preRollVideoElement.play().then(() => {
+                        console.log("Pre-roll video başlatıldı (playPreRollAndSetupOverlays).");
+                        isVideoStartedOnce = true;
+                        if (customPlayButton) customPlayButton.style.display = 'none';
+                        if (clickOverlay && activePreRollVideo.target_url) {
+                            clickOverlay.href = activePreRollVideo.target_url;
+                            clickOverlay.style.display = 'block';
+                            console.log("Click overlay aktif edildi.");
+                        }
+                    }).catch(error => {
+                        console.error("Pre-roll video başlatılamadı (playPreRollAndSetupOverlays):", error);
+                        switchToMainContent(); // Oynatma hatasında ana içeriğe geç
+                    });
+                }
+            }
+
+            if (preRollVideoElement && activePreRollVideo && activePreRollVideo.video_url) {
+                console.log("Pre-roll video_url (single-episode):", activePreRollVideo.video_url);
+                if(mainPlayerContainer) mainPlayerContainer.style.display = 'none';
+                preRollPlayerContainer.style.display = 'block'; 
+                preRollVideoElement.src = activePreRollVideo.video_url;
+                preRollVideoElement.controls = false;
+                preRollVideoElement.muted = false;
+
+                preRollVideoElement.oncanplay = function() {
+                    console.log("Pre-roll oncanplay tetiklendi. OYNAT butonu gösteriliyor.");
+                    if (customPlayButton && !isVideoStartedOnce) { // Eğer video henüz başlamadıysa butonu göster
+                        customPlayButton.style.display = 'block';
+                    }
+                };
+
+                // Video oynatılmaya başlandığında OYNAT butonunu gizle (her ihtimale karşı)
+                preRollVideoElement.onplay = function() {
+                    console.log("Pre-roll onplay event. OYNAT butonu gizleniyor.");
+                    if (customPlayButton) customPlayButton.style.display = 'none';
+                    // Eğer video oynuyorsa ve click overlay aktif olmalıysa (ama henüz değilse)
+                    // Bu durum normalde playPreRollAndSetupOverlays içinde ele alınır
+                    // Ancak bazı tarayıcı otomatik oynatma senaryolarında burası da yedek olabilir.
+                    if (isVideoStartedOnce && clickOverlay && activePreRollVideo.target_url && clickOverlay.style.display === 'none') {
+                        clickOverlay.href = activePreRollVideo.target_url;
+                        clickOverlay.style.display = 'block';
+                        console.log("Click overlay (onplay event'inden) aktif edildi.");
+                    }
+                };
+
+                if (customPlayButton) {
+                    customPlayButton.addEventListener('click', function(event) {
+                        event.stopPropagation(); // Video elementine tıklama gitmesin
+                        console.log("Özel OYNAT butonuna tıklandı.");
+                        playPreRollAndSetupOverlays();
+                    });
+                }
+
+                preRollVideoElement.addEventListener('click', function(event) {
+                    if (!isVideoStartedOnce) {
+                        // event.preventDefault(); // Zaten customPlayButton click'i bunu yapar veya playPreRoll direkt çalışır
+                        // event.stopPropagation(); // Üsttekiyle aynı
+                        console.log("Videoya tıklandı (başlamamışken). Oynatma deneniyor.");
+                        playPreRollAndSetupOverlays();
+                    } else {
+                        console.log("Video oynuyor, tıklama overlay tarafından yönetilmeli.");
+                    }
+                });
+
+                preRollVideoElement.onended = function() {
+                    console.log("Pre-roll video bitti (single-episode).");
+                    switchToMainContent();
+                };
+
+                preRollVideoElement.onerror = function(e) {
+                    console.error("Reklam videosu yüklenirken hata oluştu (single-episode). Video src:", preRollVideoElement.src, "Error Event:", e);
+                    switchToMainContent();
+                };
+                
+                if (activePreRollVideo.skippable_after_seconds && parseInt(activePreRollVideo.skippable_after_seconds, 10) > 0) {
+                    let skippableTime = parseInt(activePreRollVideo.skippable_after_seconds, 10);
+                    if(preRollSkipButton) {
+                        preRollSkipButton.innerText = `Reklamı Atla (${skippableTime}s)`;
+                        preRollSkipButton.style.display = 'block'; // Başlangıçta görünür
+                        preRollSkipButton.style.pointerEvents = 'none'; // Tıklanamaz yap
+                        preRollSkipButton.style.opacity = '0.6'; // Biraz soluk göster
+                    }
+
+                    preRollVideoElement.ontimeupdate = function() {
+                        const currentTime = Math.floor(preRollVideoElement.currentTime);
+                        if (!preRollVideoElement.seeking && currentTime >= skippableTime) {
+                            if(preRollSkipButton) {
+                                preRollSkipButton.innerText = 'Reklamı Atla';
+                                preRollSkipButton.style.pointerEvents = 'auto'; // Tıklanabilir yap
+                                preRollSkipButton.style.opacity = '1'; // Normal görünüm
+                                // Olay dinleyicisini burada kaldırmak iyi olabilir, bir kez aktif ettikten sonra gereksiz yere çalışmasın.
+                                // preRollVideoElement.ontimeupdate = null; 
+                            }
+                        } else if (currentTime < skippableTime && preRollSkipButton) {
+                             preRollSkipButton.innerText = `Reklamı Atla (${skippableTime - currentTime}s)`;
+                        }
+                    };
+                } else if (preRollSkipButton) { 
+                    preRollSkipButton.style.display = 'none'; // Atlanamazsa butonu tamamen gizle
+                }
+
+                // Bu kontrol yukarıdaki blokla birleştirilebilir veya ayrı kalabilir, şu anki haliyle de çalışır.
+                if(preRollSkipButton && (!activePreRollVideo.skippable_after_seconds || parseInt(activePreRollVideo.skippable_after_seconds, 10) <= 0)){
+                     preRollSkipButton.style.display = 'none'; // skippable_after_seconds yoksa veya 0 ise de gizle
+                }
+
+                if(preRollSkipButton) {
+                    preRollSkipButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log("Reklamı atla tıklandı (single-episode).");
+                        switchToMainContent();
+                    });
+                }
+
+                // Şimdilik clickOverlay'i her zaman gizli tutalım ki video tıklamasıyla çakışmasın.
+                if (clickOverlay) {
+                    clickOverlay.style.display = 'none';
+                }
+            } else {
+                console.log("Pre-roll koşulları sağlanamadı (video_url eksik veya activePreRollVideo null) veya video URL yok (data attribute). Ana içerik gösteriliyor (single-episode).");
+                switchToMainContent();
+            }
+        } else {
+            console.log("Pre-roll player container or data attribute not found. Showing main content (single-episode).");
+            switchToMainContent();
+        }
+    });
+
+    // Dil değiştirme script'i
+    $(function(){
+        var langChangeUrl = "https://filmavcisi1.com/lang/change";
+        console.log('Language changer script setup and ready (single-episode)');
+        $(".changeLangMobile").change(function(){
+            console.log('Language changed to: ' + $(this).val() + ' via mobile changer');
+            window.location.href = langChangeUrl + "?lang="+ $(this).val();
         });
-    })
+    });
 </script>
-
 @endpush

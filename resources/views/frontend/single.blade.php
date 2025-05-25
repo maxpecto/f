@@ -71,6 +71,25 @@
         -ms-filter: brightness(1.2) !important;
         filter: brightness(1.2) !important;
     }
+    #custom-preroll-play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10008;
+        padding: 12px 25px;
+        font-size: 18px;
+        cursor: pointer;
+        background-color: rgba(0,0,0,0.6);
+        color: white;
+        border: 1.5px solid white;
+        border-radius: 8px;
+        display: none; /* JS ile gösterilecek */
+        transition: opacity 0.3s ease;
+    }
+    #custom-preroll-play-button:hover {
+        background-color: rgba(0,0,0,0.8);
+    }
 </style>
 
 @endsection
@@ -83,7 +102,25 @@
         {{-- Main Contain --}}
         <div class="space-y-8 xl:w-9/12 w-full">
             {{-- Player  --}}
+            {{-- Ön Yükleme Video Oynatıcısı Başlangıcı (Güncellenmiş Blok) --}}
+            @if(isset($activePreRollVideo) && $activePreRollVideo)
+                <div id="preroll-player-container" 
+                     data-preroll-video="{{ json_encode($activePreRollVideo->toArray(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) }}"
+                     style="background-color: black; position: relative; width: 100%; margin: auto; aspect-ratio: 16/9; display: none;">
+                    <video id="preroll-video-element" width="100%" height="100%" preload="auto" style="display: block; width: 100%; height: 100%;" playsinline></video>
+                    <button id="custom-preroll-play-button">OYNAT</button>
+                    <a id="preroll-skip-button" href="#" style="display:none; position:absolute; bottom:20px; right:20px; padding:8px 15px; background:rgba(0,0,0,0.7); color:white; text-decoration:none; z-index:10010; border-radius: 5px; font-size: 0.9em;">
+                        Reklamı Atla
+                    </a>
+                    <a id="preroll-click-overlay" href="#" target="_blank" style="position:absolute; top:0; left:0; width:100%; height: calc(100% - 50px); z-index:10005; cursor:pointer; display:none;"></a>
+                </div>
+            @endif
+            {{-- Ön Yükleme Video Oynatıcısı Sonu --}}
+
+            {{-- Ana İçerik Oynatıcısı --}}
+            <div id="main-player-container" style="{{ (isset($activePreRollVideo) && $activePreRollVideo) ? 'display:none;' : 'display:block;' }}">
             <x-player :movies="$movies" :player="$player" />
+            </div>
             {{-- Details--}}
             <div class="w-full flex lg:px-10 px-0 text-white lg:space-x-6 space-x-0">
                 <div class="w-1/5 lg:block hidden">
@@ -585,11 +622,6 @@
 
         });
 
-	})
-</script>
-
-<script>
-    $(function() {
         $('#poster-carousel .carousel-items').slick({
             infinite: false,
             slidesToScroll: 5,
@@ -703,7 +735,122 @@
         $('#casts-carousel .menu span:last').on('click', function() {
             $('#casts-carousel .carousel-items').slick('slickNext');
         });
-    })
-</script>
 
+        // Pre-roll Video Logic Start
+        const preRollPlayerContainer = document.getElementById('preroll-player-container');
+        const mainPlayerContainer = document.getElementById('main-player-container'); // mainPlayerContainer'ı genel kapsamda tanımla
+
+        if (preRollPlayerContainer && preRollPlayerContainer.dataset.prerollVideo) {
+            try {
+                const activePreRollVideoData = JSON.parse(preRollPlayerContainer.dataset.prerollVideo);
+                const preRollVideoElement = document.getElementById('preroll-video-element');
+                const skipButton = document.getElementById('preroll-skip-button');
+                const clickOverlay = document.getElementById('preroll-click-overlay');
+                const customPlayButton = document.getElementById('custom-preroll-play-button');
+
+                if (!activePreRollVideoData || !activePreRollVideoData.video_url || !preRollVideoElement || !mainPlayerContainer || !skipButton || !clickOverlay || !customPlayButton) {
+                    console.error("Pre-roll için gerekli HTML elementlerinden biri veya video verisi eksik.");
+                    if(mainPlayerContainer) mainPlayerContainer.style.display = 'block';
+                    if(preRollPlayerContainer) preRollPlayerContainer.style.display = 'none';
+                } else {
+                    let isVideoStartedOnce = false;
+                    let skippableAfter = activePreRollVideoData.skippable_after_seconds ? parseInt(activePreRollVideoData.skippable_after_seconds) : 0;
+                    let countdownInterval;
+
+                    preRollPlayerContainer.style.display = 'block';
+                    if(mainPlayerContainer) mainPlayerContainer.style.display = 'none';
+                    
+                    preRollVideoElement.src = activePreRollVideoData.video_url;
+                    preRollVideoElement.muted = false;
+                    preRollVideoElement.controls = false;
+                    customPlayButton.style.display = 'block';
+
+                    const showMainPlayer = () => {
+                        clearInterval(countdownInterval);
+                        if(preRollPlayerContainer) preRollPlayerContainer.style.display = 'none';
+                        if(mainPlayerContainer) mainPlayerContainer.style.display = 'block';
+                    };
+
+                    const startPreRoll = () => {
+                        if (!isVideoStartedOnce) {
+                            preRollVideoElement.play().then(() => {
+                                isVideoStartedOnce = true;
+                                customPlayButton.style.display = 'none';
+                                if (activePreRollVideoData.target_url) {
+                                    clickOverlay.style.display = 'block';
+                                    clickOverlay.href = activePreRollVideoData.target_url;
+                                }
+                            }).catch(error => {
+                                console.error("Pre-roll video oynatma hatası:", error);
+                                customPlayButton.style.display = 'block';
+                                showMainPlayer(); // Hata durumunda ana oynatıcıyı göster
+                            });
+                        }
+                    };
+
+                    customPlayButton.addEventListener('click', startPreRoll);
+                    preRollVideoElement.addEventListener('click', () => {
+                        if (!isVideoStartedOnce) {
+                            startPreRoll();
+                        }
+                    });
+
+                    preRollVideoElement.onloadedmetadata = () => {
+                        if (skippableAfter > 0 && skippableAfter < preRollVideoElement.duration) {
+                            skipButton.style.display = 'block';
+                            skipButton.style.pointerEvents = 'none';
+                            skipButton.style.opacity = '0.6';
+                            let timeLeft = skippableAfter; 
+                            skipButton.textContent = `Reklamı Atla (${timeLeft})`;
+                            countdownInterval = setInterval(() => {
+                                timeLeft--;
+                                if (timeLeft > 0) {
+                                    skipButton.textContent = `Reklamı Atla (${timeLeft})`;
+                                } else {
+                                    clearInterval(countdownInterval);
+                                    skipButton.textContent = 'Reklamı Atla';
+                                    skipButton.style.pointerEvents = 'auto';
+                                    skipButton.style.opacity = '1';
+                                }
+                            }, 1000);
+                        } else {
+                            skipButton.style.display = 'none';
+                        }
+                    };
+
+                    skipButton.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (skipButton.style.pointerEvents === 'auto') {
+                            preRollVideoElement.pause();
+                            showMainPlayer();
+                        }
+                    });
+
+                    preRollVideoElement.addEventListener('ended', showMainPlayer);
+                }
+            } catch (e) {
+                console.error("Pre-roll JSON parse veya genel JS hatası:", e);
+                if(mainPlayerContainer) mainPlayerContainer.style.display = 'block'; // JSON parse hatasında ana oynatıcıyı göster
+                if(preRollPlayerContainer) preRollPlayerContainer.style.display = 'none';
+            }
+        } else {
+            // Pre-roll container veya data attribute yoksa ana içeriği göster
+            if(mainPlayerContainer) mainPlayerContainer.style.display = 'block';
+            if(preRollPlayerContainer && preRollPlayerContainer.style) preRollPlayerContainer.style.display = 'none'; // Ek kontrol
+        }
+        // Pre-roll Video Logic End
+
+        // Language switcher
+        const locale = "{{ session()->get('locale') ?? app()->getLocale() }}";
+        document.querySelectorAll(".lang-switcher").forEach(switcher => {
+            switcher.addEventListener("click", function(e) {
+                e.preventDefault();
+                const lang = this.dataset.lang;
+                if (lang !== locale) {
+                    fetch(`/lang/${lang}`).then(() => window.location.reload());
+                }
+            });
+        });
+    });
+</script>
 @endpush

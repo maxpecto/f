@@ -9,6 +9,7 @@ use App\Models\Like;
 use App\Models\Comments;
 use App\Models\Settings;
 use App\Models\User;
+use App\Models\PreRollVideo;
 use Auth;
 use Response;
 use DB;
@@ -25,6 +26,8 @@ class DetailMovieController extends Controller
         if (!$movies) {
             abort(404);
         }
+
+        $activePreRollVideo = PreRollVideo::where('is_active', true)->first();
 
         $movies->increment('views');
         $totalLikes = Like::where('items_id', $movies->id)->where('liked', true)->count();
@@ -45,7 +48,7 @@ class DetailMovieController extends Controller
         ->get('https://api.themoviedb.org/3/movie/'.$movies->tmdb_id.'/images')
         ->json();
 
-		return view('frontend.single',compact('movies','player','download','relatedmovies','tmdbdata','totalLikes','totalDislikes'));
+		return view('frontend.single',compact('movies','player','download','relatedmovies','tmdbdata','totalLikes','totalDislikes', 'activePreRollVideo'));
     }
 
     public function comments(Request $request){

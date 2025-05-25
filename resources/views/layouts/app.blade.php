@@ -7,6 +7,10 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
     @if(Route::current()->getName() == 'home')
     <title>{{ $general->site_name }} - {{ $general->site_title }}</title>
     <meta name="description" content="{{ $general->site_description }}"/>
@@ -109,12 +113,13 @@
     <meta name="msvalidate.01" content="{!! base64_decode($seosettings->site_bing_verification_code) !!}" />
     <meta name="yandex-verification" content="{!! base64_decode($seosettings->site_yandex_verification_code) !!}"/>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <!-- jQuery (CDN) - Diğer scriptlerden önce yüklenmeli -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
         [x-cloak] { display: none }
 
         /* Navbar scroll effect */
@@ -331,7 +336,6 @@
         }
     </style>
     <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.min.css" />
 
@@ -382,7 +386,7 @@
     @yield('head')
 </head>
 <body class="bg-gray-900 font-poppins" data-theme="dark">
-    <div id="app">
+    <div id="app" x-data="{ mobileMenuOpen: false, search: false, account: false }">
         <header id="main-header" class="bg-gray-800 sticky top-0 z-50 shadow-2xl">
             <div class="container bg-gray-900 sm:py-4 py-2 mx-auto flex items-center sm:px-4 px-2 w-full text-sm md:text-base" >
                 {{-- Logo ve Sol Arama Butonu --}}
@@ -392,11 +396,6 @@
                             <img src="{{ asset('/assets/image') }}/{{ $general->site_logo }}" class="w-32">
                         </a>
                     </div>
-                    <div class="relative block md:ml-5 ml-1">
-                        <button class="searchbutton flex items-center text-white text-xl  hover:text-gray-300 cursor-pointer rounded-full bg-gray-800 h-9 w-9 justify-center hover:text-gray-300 hover:bg-gray-700 focus:outline-none" onclick="ShowSearch()" id="searchbutton">
-                            <span class="iconify" data-icon="carbon:search" data-inline="false"></span>
-                        </button>
-                    </div>
                 </div>
 
                 {{-- Ana Navigasyon Menüsü (Sola Yaslı) --}}
@@ -404,8 +403,7 @@
                         <a class="hover:text-yellow-400 {{ request()->is('/') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/">{{ __('Home') }}</a>
                         <a class="hover:text-yellow-400 {{ request()->is('movies') || request()->is('movie/*') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/movies">{{ __('Movies') }}</a>
                         <a class="hover:text-yellow-400 {{ request()->is('series') || request()->is('series/*') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/series">{{ __('Series') }}</a>
-                        <a class="hover:text-yellow-400 {{ request()->is('episodes') || request()->is('episode/*') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/episodes">{{ __('Episodes') }}</a>
-                        <a class="hover:text-yellow-400 {{ request()->is('persons') || request()->is('person/*') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/persons">{{ __('Persons') }}</a>
+                        <a class="hover:text-yellow-400 {{ request()->is('trendings') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/trendings">{{ __('Trendings') }}</a>
                 </nav>
 
                 {{-- Sağ Taraftaki Menü Öğeleri (Collections, My Lists, Kullanıcı) --}}
@@ -428,8 +426,8 @@
                             <span class="ml-1 xl:inline hidden">{{ __('My Lists') }}</span>
                         </a>
                         {{-- Account --}}
-                        <div class="relative" x-cloak x-data="{ account: false }" title="{{ __('Account') }}">
-                            <button @click="account = true" class="flex items-center text-white text-xl hover:text-gray-300 cursor-pointer h-9 w-9 rounded-full border border-transparent focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                        <div class="relative" x-cloak title="{{ __('Account') }}">
+                            <button @click="account = !account" class="flex items-center text-white text-xl hover:text-gray-300 cursor-pointer h-9 w-9 rounded-full border border-transparent focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
                                 <img src="{{ asset('/assets/users/') }}{{Auth::user()->profile_img}}" class="rounded-full ">
                             </button>
                             <ul x-show="account"
@@ -500,8 +498,8 @@
                             <span class="iconify" data-icon="bi:bookmark-star-fill" data-inline="false"  ></span>
                         </a>
                         {{-- Account --}}
-                        <div x-cloak x-data="{ account: false }" title="{{ __('Account') }}">
-                            <button @click="account = true" class="flex items-center text-white text-xl hover:text-gray-300 cursor-pointer h-9 w-9 rounded-full border border-transparent focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
+                        <div x-cloak title="{{ __('Account') }}" class="relative">
+                            <button @click="account = !account" class="flex items-center text-white text-xl hover:text-gray-300 cursor-pointer h-9 w-9 rounded-full border border-transparent focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent">
                                 <img src="{{ asset('/assets/users/') }}{{Auth::user()->profile_img}}" class="rounded-full">
                             </button>
                             <ul x-show="account"
@@ -532,12 +530,36 @@
                             </ul>
                         </div>
                     @endauth
-                    <button @click="search = true" class="ml-1 flex items-center text-white text-xl hover:text-gray-300 cursor-pointer mr-1 p-2 bg-gray-800 rounded">
-                        <span class="iconify" data-icon="heroicons-solid:menu" data-inline="false"></span>
+                    {{-- Mobil Menü Butonu --}}
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="ml-1 flex items-center text-white text-xl hover:text-gray-300 cursor-pointer mr-1 p-2 bg-gray-800 rounded">
+                        <span x-show="!mobileMenuOpen" class="iconify" data-icon="heroicons-solid:menu" data-inline="false"></span>
+                        <span x-show="mobileMenuOpen" class="iconify" data-icon="heroicons-solid:x" data-inline="false"></span>
                     </button>
-                    {{-- Mobil menünün açılır içeriği burada devam ediyor... --}}
                 </div>
             </div>
+
+            {{-- Mobil Navigasyon Menüsü --}}
+            <nav x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false"
+                 class="lg:hidden fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-95 z-40 flex flex-col items-center justify-center space-y-6"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-x-full"
+                 x-transition:enter-end="opacity-100 transform translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 transform translate-x-0"
+                 x-transition:leave-end="opacity-0 transform -translate-x-full"
+                 style="display: none;">
+                <a class="text-white hover:text-yellow-400 text-2xl {{ request()->is('/') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/" @click="mobileMenuOpen = false">{{ __('Home') }}</a>
+                <a class="text-white hover:text-yellow-400 text-2xl {{ request()->is('movies') || request()->is('movie/*') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/movies" @click="mobileMenuOpen = false">{{ __('Movies') }}</a>
+                <a class="text-white hover:text-yellow-400 text-2xl {{ request()->is('series') || request()->is('series/*') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/series" @click="mobileMenuOpen = false">{{ __('Series') }}</a>
+                <a class="text-white hover:text-yellow-400 text-2xl {{ request()->is('trendings') ? 'text-yellow-400 border-b-2 border-yellow-400' : '' }}" href="/trendings" @click="mobileMenuOpen = false">{{ __('Trendings') }}</a>
+                {{-- Dil Seçimi Mobil Menü İçin --}}
+                <div class="mt-6">
+                    <select class="changeLangMobile bg-gray-800 text-white border border-gray-700 rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        <option value="tr" {{ session()->get('locale') == 'tr' ? 'selected' : '' }}>TR</option>
+                        {{-- Diğer diller eklenebilir --}}
+                    </select>
+                </div>
+            </nav>
         </header>
 
         {{-- Announcements Bar --}}
@@ -681,10 +703,7 @@
                                     <a href="/series">{{ __('Series') }}</a>
                                 </div>
                                 <div class="text-sm text-white hover:text-yellow-400">
-                                    <a href="/episodes">{{ __('Episodes') }}</a>
-                                </div>
-                                <div class="text-sm text-white hover:text-yellow-400">
-                                    <a href="/persons">{{ __('Persons') }}</a>
+                                    <a href="/trendings">{{ __('Trendings') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -730,30 +749,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.js" ></script>
     @stack('js')
     <script>
-        function ShowSearch() {
-            $('.searchbutton').toggleClass('text-yellow-400 expand');
-
-            var test = document.getElementById('searchbutton');
-
-            if($(".searchbutton").hasClass("expand")){
-                test.innerHTML = '<span class="iconify" data-icon="grommet-icons:close" data-inline="false"></span>'
-            }else{
-                test.innerHTML = '<span class="iconify" data-icon="carbon:search" data-inline="false"></span>'
-            }
-
-
-            var x = document.getElementById("searchBox");
-            if (x.style.display === "none") {
-                x.style.display = "block";
-            } else {
-                x.style.display = "none";
-            }
-        }
-
-  
         var url = "{{ route('changeLang') }}";
 
-        $(".changeLang").change(function(){
+        $(".changeLang, .changeLangMobile").change(function(){
             window.location.href = url + "?lang="+ $(this).val();
         });
 

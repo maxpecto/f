@@ -41,7 +41,7 @@ class PlatformController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:platforms,name',
-            'logo_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'logo_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
             'slug' => 'nullable|string|max:255|unique:platforms,slug',
         ]);
 
@@ -105,7 +105,7 @@ class PlatformController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:platforms,name,' . $platform->id,
-            'logo_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'logo_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
             'slug' => 'nullable|string|max:255|unique:platforms,slug,' . $platform->id,
         ]);
 

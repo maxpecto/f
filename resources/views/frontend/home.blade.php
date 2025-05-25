@@ -30,7 +30,11 @@
                                                     <div class="card-content-wrap">
                                                         <div class="card-image-content">
                                                             <div class="image-card base-card-image">
-                                                                <img alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/movies/poster/{{ $feature->poster }}">
+                                                                @if ($loop->first)
+                                                                <img fetchpriority="high" alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/movies/poster/{{ $feature->poster }}">
+                                                                @else
+                                                                <img loading="lazy" alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/movies/poster/{{ $feature->poster }}">
+                                                                @endif
                                                             </div>
                                                             <div>
                                                                 <div class="card-overlay show-icon">
@@ -66,7 +70,11 @@
                                                     <div class="card-content-wrap">
                                                         <div class="card-image-content">
                                                             <div class="image-card base-card-image">
-                                                                <img alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/series/poster/{{ $feature->poster }}">
+                                                                @if ($loop->first)
+                                                                <img fetchpriority="high" alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/series/poster/{{ $feature->poster }}">
+                                                                @else
+                                                                <img loading="lazy" alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/series/poster/{{ $feature->poster }}">
+                                                                @endif
                                                             </div>
                                                             <div>
                                                                 <div class="card-overlay show-icon">
@@ -186,7 +194,11 @@
                                                 <div class="card-content-wrap" style="position: relative;">
                                                     <div class="card-image-content">
                                                         <div class="image-card base-card-image">
-                                                            <img alt="{{ $item->title }}" title="{{ $item->title }}" class="original-image" src="/assets/{{ $item->type == 'movies' ? 'movies' : 'series' }}/poster/{{ $item->poster }}">
+                                                            @if ($loop->first)
+                                                            <img fetchpriority="high" alt="{{ $item->title }}" title="{{ $item->title }}" class="original-image" src="/assets/{{ $item->type == 'movies' ? 'movies' : 'series' }}/poster/{{ $item->poster }}">
+                                                            @else
+                                                            <img loading="lazy" alt="{{ $item->title }}" title="{{ $item->title }}" class="original-image" src="/assets/{{ $item->type == 'movies' ? 'movies' : 'series' }}/poster/{{ $item->poster }}">
+                                                            @endif
                                                         </div>
                                                         <div>
                                                             <div class="card-overlay show-icon">
@@ -411,7 +423,7 @@
                                                     <div class="card-content-wrap" style="position: relative;">
                                                         <div class="card-image-content">
                                                             <div class="image-card base-card-image">
-                                                                <img alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="/assets/movies/poster/{{ $latest->poster }}">
+                                                                <img loading="lazy" alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="/assets/movies/poster/{{ $latest->poster }}">
                                                             </div>
                                                             <div>
                                                                 <div class="card-overlay show-icon">
@@ -487,7 +499,7 @@
                                                 <div class="card-content-wrap" style="position: relative;">
                                                     <div class="card-image-content">
                                                         <div class="image-card base-card-image">
-                                                            <img alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="/assets/series/poster/{{ $latest->poster }}">
+                                                            <img loading="lazy" alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="/assets/series/poster/{{ $latest->poster }}">
                                                         </div>
                                                         <div>
                                                             <div class="card-overlay show-icon">
@@ -570,9 +582,9 @@
                                                                         @break
                                                                     @endif
                                                                     @if($singleItems->type == 'movies')
-                                                                        <img alt="{{ $singleItems->title }}" title="{{ $singleItems->title }}" class="block w-2/4" src="/assets/movies/poster/{{ $singleItems->poster }}">
+                                                                        <img loading="lazy" alt="{{ $singleItems->title }}" title="{{ $singleItems->title }}" class="block w-2/4" src="/assets/movies/poster/{{ $singleItems->poster }}">
                                                                     @else
-                                                                        <img alt="{{ $singleItems->title }}" title="{{ $singleItems->title }}" class="block w-2/4" src="/assets/series/poster/{{ $singleItems->poster }}">
+                                                                        <img loading="lazy" alt="{{ $singleItems->title }}" title="{{ $singleItems->title }}" class="block w-2/4" src="/assets/series/poster/{{ $singleItems->poster }}">
                                                                     @endif
                                                                     @php $check++; @endphp
                                                                 @endforeach
@@ -616,7 +628,7 @@
                             <div class="relative text-center actor-card">
                                 <a href="{{ url('/person/') }}/{{ $person->id }}" title="{{ $person->name }}" class="block group bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
                                     <div class="relative inline-block mb-2 actor-image-wrapper pt-3">
-                                        <img alt="{{ $person->name }}" title="{{ $person->name }}" class="actor-profile-image" src="/assets/persons/{{ $person->profile_path }}">
+                                        <img loading="lazy" alt="{{ $person->name }}" title="{{ $person->name }}" class="actor-profile-image" src="/assets/persons/{{ $person->profile_path }}">
                                     </div>
                                     <h3 class="text-sm font-semibold text-yellow-400 group-hover:text-yellow-300 transition-colors duration-200 truncate px-2" title="{{ $person->name }}">{{ $person->name }}</h3>
                                     <p class="text-xs text-gray-400 truncate px-2 pb-3">{{ $person->known_for_department }}</p>

@@ -10,6 +10,8 @@ use App\Models\Like;
 use App\Models\EpisodeLike;
 use App\Models\Comments;
 use App\Models\Settings;
+use App\Models\PreRollVideo;
+use Illuminate\Support\Facades\Log;
 use Auth;
 use Response;
 use DB;
@@ -31,9 +33,21 @@ class DetailEpisodeController extends Controller{
 		$series = Items::where('id',$id)->first();
 		$episode = Episodes::where('episode_unique_id',$eUID)->first();
 
+        $activePreRollVideo = PreRollVideo::where('is_active', true)->first();
+
         if (!$episode) {
             abort(404, 'Episode not found.');
         }
+
+        // Loglama Başlangıcı
+        Log::info('====== PRE-ROLL VIDEO DEBUG START ======');
+        if ($activePreRollVideo) {
+            Log::info('Active PreRollVideo Data for JSON: ' . json_encode($activePreRollVideo->toArray(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP));
+        } else {
+            Log::info('Active PreRollVideo is NULL');
+        }
+        Log::info('====== PRE-ROLL VIDEO DEBUG END ======');
+        // Loglama Sonu
 
         $episode->increment('views');
 
@@ -55,7 +69,7 @@ class DetailEpisodeController extends Controller{
         ->get('https://api.themoviedb.org/3/tv/'.$series->tmdb_id.'/images')
         ->json();
 
-		return view('frontend.single-episode',compact('series','episode','allepisodesforseasons','player','download','relatedseries','tmdbdata','totalLikes','totalDislikes'));
+		return view('frontend.single-episode',compact('series','episode','allepisodesforseasons','player','download','relatedseries','tmdbdata','totalLikes','totalDislikes', 'activePreRollVideo'));
 	}
 
     public function comments(Request $request){

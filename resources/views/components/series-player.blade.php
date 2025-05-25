@@ -1,7 +1,20 @@
+@php
+    $initialPlayerUrl = $series->trailer; // Varsayılan olarak fragman
+    if (isset($firstEpisodeToShow) && $firstEpisodeToShow && isset($firstEpisodeToShow->player)) {
+        $playerData = json_decode($firstEpisodeToShow->player, true);
+        // Oynatıcı verisinin yapısını kontrol et ve ilk URL'yi al
+        if ($playerData && isset($playerData['url']) && is_array($playerData['url']) && !empty($playerData['url'][0])) {
+            $initialPlayerUrl = $playerData['url'][0];
+        } elseif ($playerData && isset($playerData['url']) && is_string($playerData['url']) && !empty($playerData['url'])){
+            // Bazen direkt string olarak gelebilir
+            $initialPlayerUrl = $playerData['url'];
+        }
+    }
+@endphp
 
 <div id="player-wrapper">
     <div class="ui top attached borderless p-0" id="series-player">
-        <div class="ui embed" data-url="{{ $series->trailer }}" data-placeholder="/assets/series/backdrop/{{ $series->backdrop }}" data-icon="play circle outline">
+        <div class="ui embed" data-url="{{ $initialPlayerUrl }}" data-placeholder="/assets/series/backdrop/{{ $series->backdrop }}" data-icon="play circle outline">
         </div>
     </div>
 

@@ -71,6 +71,23 @@
         -ms-filter: brightness(1.2) !important;
         filter: brightness(1.2) !important;
     }
+    /* #preroll-player-container ve #preroll-video-element için stiller kaldırıldı, inline olarak tanımlanacaklar */
+
+    .skip-button {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: 1px solid white;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 10000; /* Video üzerinde olması için */
+    }
+    .skip-button:hover {
+        background-color: rgba(0, 0, 0, 0.9);
+    }
 </style>
 
 @endsection
@@ -83,16 +100,24 @@
         {{-- Main Contain --}}
         <div class="space-y-8 xl:w-9/12 w-full pb-5">
             {{-- Player  --}}
-            <x-series-player :series="$series" :uniqueSeason="$uniqueSeason" :allepisodes="$allepisodes"/>
+            {{-- Ön Yükleme Video Oynatıcısı --}}
+            @if(isset($activePreRollVideo) && $activePreRollVideo)
+                <div id="preroll-player-container" style="position: relative; background-color: black; overflow: hidden; z-index: 100; width: 100%;">
+                    <video id="preroll-video-element" style="width: 100%; height: auto; max-height: 70vh; display: block;" playsinline webkit-playsinline autoplay muted></video>
+                    {{-- Atlama Butonu (JavaScript ile eklenecek) --}}
+                </div>
+            @endif
+
+            {{-- Ana Video Oynatıcısı (Ön yükleme varsa başlangıçta gizli) --}}
+            <div id="main-player-container" @if(isset($activePreRollVideo) && $activePreRollVideo) style="display: none;" @endif>
+                <x-series-player :series="$series" :uniqueSeason="$uniqueSeason" :allepisodes="$allepisodes" :firstEpisodeToShow="$firstEpisodeToShow"/>
+            </div>
 
             {{-- Details--}}
             <div class="w-full flex lg:px-10 px-0 text-white lg:space-x-6 space-x-0">
                 <div class="w-1/5 lg:block hidden">
                     <div class="w-full">
                         <img alt="{{ $series->title }}" title="{{ $series->title }}" class="w-full rounded-t" src="/assets/series/poster/{{ $series->poster }}">
-                    </div>
-                    <div class="flex items-center w-full" id="series-players">
-                        <a href="javascript:void(0)" data-url="{{ $series->trailer }}" class="trailer w-full bg-yellow-500 px-4 py-2 rounded-b text-white text-center hover:bg-yellow-400 hover:text-white">{{ __("Trailer") }}</a>
                     </div>
                 </div>
                 <div class="lg:w-4/5 w-full px-10 lg:px-0">
@@ -548,7 +573,7 @@
 
 @endsection
 
-@push('js')
+@push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/embed.min.js"></script>
 <script>
 	$(function(){
@@ -719,4 +744,116 @@
     })
 </script>
 
-@endpush
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const activePreRollVideo = @json($activePreRollVideo ?? null);
+    const prerollPlayerContainer = document.getElementById('preroll-player-container');
+    const prerollVideoElement = document.getElementById('preroll-video-element');
+    const mainPlayerContainer = document.getElementById('main-player-container');
+
+    console.log('Pre-roll data:', activePreRollVideo);
+
+    if (activePreRollVideo && prerollVideoElement && mainPlayerContainer) {
+        console.log('Pre-roll video will be played.');
+        // Ana oynatıcıyı gizle, pre-roll oynatıcısını göster (CSS zaten yapıyor olmalı ama emin olalım)
+        mainPlayerContainer.style.display = 'none';
+        prerollPlayerContainer.style.display = 'block'; // veya 'relative' ya da stil ne gerektiriyorsa
+
+        prerollVideoElement.src = activePreRollVideo.video_url;
+
+        if (activePreRollVideo.target_url) {
+            prerollPlayerContainer.style.cursor = 'pointer'; // Tıklanabilir alanı kapsayıcıya ata
+            prerollPlayerContainer.addEventListener('click', function(event) {
+                // Eğer tıklama skip butonundan gelmiyorsa hedef URL'ye git
+                if (event.target !== skipButton) {
+                    window.open(activePreRollVideo.target_url, '_blank');
+                }
+            });
+        }
+
+        let skipButton = null;
+        if (activePreRollVideo.skippable_after_seconds && activePreRollVideo.skippable_after_seconds > 0) {
+            skipButton = document.createElement('button');
+            skipButton.classList.add('skip-button');
+            skipButton.innerText = `Reklamı Atla (${activePreRollVideo.skippable_after_seconds}s)`;
+            skipButton.disabled = true;
+            // Skip butonunu prerollPlayerContainer'ın İÇİNE ekle, video elementinin değil
+            prerollPlayerContainer.appendChild(skipButton); 
+
+            let countdown = activePreRollVideo.skippable_after_seconds;
+            const interval = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    skipButton.innerText = `Reklamı Atla (${countdown}s)`;
+                } else {
+                    clearInterval(interval);
+                    skipButton.innerText = 'Reklamı Atla';
+                    skipButton.disabled = false;
+                    skipButton.addEventListener('click', playMainVideo);
+                }
+            }, 1000);
+        }
+
+        prerollVideoElement.addEventListener('ended', playMainVideo);
+        prerollVideoElement.addEventListener('error', function() {
+            console.error('Pre-roll video error. Skipping to main content.');
+            playMainVideo();
+        });
+
+        prerollVideoElement.play().then(() => {
+            console.log('Pre-roll video playback started.');
+        }).catch(error => {
+            console.error('Pre-roll video playback failed:', error);
+            playMainVideo();
+        });
+
+    } else {
+        console.log('No active pre-roll video or player elements not found. Ensuring main player is visible.');
+        if (prerollPlayerContainer) prerollPlayerContainer.style.display = 'none';
+        if (mainPlayerContainer) mainPlayerContainer.style.display = 'block';
+        // Eğer pre-roll yoksa ana oynatıcıyı (Semantic UI) initialize etmeyi deneyebiliriz.
+        // Ancak bu genellikle sayfa yüklendiğinde zaten oluyor olmalı.
+        // Eğer $('.ui.embed').embed(); zaten varsa, tekrar çağırmak sorun yaratabilir.
+        // Sadece emin olmak için, eğer ana oynatıcı görünmüyorsa diye bir kontrol eklenebilir.
+        const semanticEmbed = mainPlayerContainer ? mainPlayerContainer.querySelector('.ui.embed') : null;
+        if (semanticEmbed && !semanticEmbed.classList.contains('active')){
+             // $(semanticEmbed).embed(); // jQuery bağımlılığı var, ve zaten yukarıda yapılıyor olabilir.
+             console.log('Attempting to initialize Semantic UI embed if not active.');
+        }
+    }
+
+    function playMainVideo() {
+        console.log('Switching to main video.');
+        if (prerollPlayerContainer) {
+            prerollPlayerContainer.style.display = 'none';
+        }
+        if (mainPlayerContainer) {
+            mainPlayerContainer.style.display = 'block';
+            const semanticEmbed = mainPlayerContainer.querySelector('.ui.embed');
+            if (semanticEmbed) {
+                console.log('Main player (Semantic UI embed) made visible. Attempting to reset and play.');
+                if (window.jQuery) {
+                    jQuery(semanticEmbed).embed('reset'); // Oynatıcıyı sıfırla
+                    // Kısa bir gecikme sonrası oynatmayı dene
+                    setTimeout(function() {
+                        console.log('Attempting to play Semantic UI embed after reset.');
+                        jQuery(semanticEmbed).embed('play');
+                        // Alternatif olarak, placeholder'a tıklamayı simüle edebiliriz eğer varsa
+                        // const placeholder = jQuery(semanticEmbed).find('.placeholder');
+                        // if (placeholder.length) {
+                        //     console.log('Placeholder found, attempting to click it.');
+                        //     placeholder.trigger('click');
+                        // } else {
+                        //     jQuery(semanticEmbed).embed('play');
+                        // }
+                    }, 100); // 100ms gecikme
+                } else {
+                    console.warn('jQuery not found, cannot programmatically play Semantic UI embed.');
+                }
+            } else {
+                 console.log('Semantic UI embed component not found in main player.');
+            }
+        }
+    }
+});
+</script>
