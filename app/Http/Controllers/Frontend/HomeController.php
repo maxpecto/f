@@ -7,32 +7,35 @@ use App\Models\Items;
 use App\Models\Episodes;
 use App\Models\Like;
 use App\Models\EpisodeLike;
-use App\Models\Settings;
 use App\Models\Sliders;
-use App\Models\Platform;
-
+use Illuminate\Support\Facades\Cache;
 use Trackers;
 
 class HomeController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
         //Tackers
         Trackers::track_agent();
-        $general = Settings::findOrFail('1');
-        $sliders = Sliders::where('visible','1')->orderBy('id', 'DESC')->get();
-        $latestmovies = Items::where('type', 'movies')->where('visible','1')->orderBy('id', 'DESC')->paginate(10);
-        $latestseries = Items::where('type', 'series')->where('visible','1')->orderBy('id', 'DESC')->paginate(10);
-        $featuremovies = Items::where('type', 'movies')->where('visible','1')->where('feature','1')->orderBy('id', 'DESC')->paginate(10);
-        $featureseries = Items::where('type', 'series')->where('visible','1')->where('feature','1')->orderBy('id', 'DESC')->paginate(10);
-        $recommendedmovies = Items::where('type', 'movies')->where('visible','1')->where('recommended','1')->orderBy('id', 'DESC')->paginate(10);
-        $recommendedseries = Items::where('type', 'series')->where('visible','1')->where('recommended','1')->orderBy('id', 'DESC')->paginate(10);
-        $platforms = Platform::whereHas('items', function($query) {
-            $query->where('visible', '1');
-        })->withCount(['items' => function($query) {
-            $query->where('visible', '1');
-        }])->having('items_count', '>', 0)->orderBy('name')->get();
 
-        return view('frontend.home',compact('general','latestmovies','latestseries','featuremovies','featureseries','recommendedmovies','recommendedseries','sliders', 'platforms'));
+        $sliders = Cache::remember('home_sliders', now()->addMinutes(60), function () {
+            return Sliders::where('visible','1')->orderBy('id', 'DESC')->get();
+        });
+
+        $currentPage = $request->input('page', 1);
+
+        $latestmovies = Cache::remember('home_latest_movies_page_' . $currentPage, now()->addMinutes(10), function () {
+            return Items::with(['genres', 'platform'])->where('type', 'movies')->where('visible','1')->orderBy('id', 'DESC')->paginate(10);
+        });
+
+        $latestseries = Cache::remember('home_latest_series_page_' . $currentPage, now()->addMinutes(10), function () {
+            return Items::with(['genres', 'platform'])->where('type', 'series')->where('visible','1')->orderBy('id', 'DESC')->paginate(10);
+        });
+
+        return view('frontend.home',compact(
+            'latestmovies',
+            'latestseries',
+            'sliders'
+        ));
     }
 
     public function onboarding(){

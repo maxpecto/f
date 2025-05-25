@@ -52,7 +52,7 @@ class User extends Authenticatable
         return $this->hasMany(Like::class);
     }
 
-    public function epsiode_likes()
+    public function episode_likes()
     {
         return $this->hasMany(EpisodeLike::class);
     }

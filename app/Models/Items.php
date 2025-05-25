@@ -21,7 +21,7 @@ class Items extends Model
     }
 
     public function episodes(){
-        return $this->hasMany('App\Models\Episodes');
+        return $this->hasMany('App\\Models\\Episodes', 'series_id', 'id');
     }
 
     public function genres(){

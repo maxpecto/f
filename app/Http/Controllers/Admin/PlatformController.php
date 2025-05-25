@@ -7,6 +7,7 @@ use App\Models\Platform;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class PlatformController extends Controller
 {
@@ -45,29 +46,37 @@ class PlatformController extends Controller
             'slug' => 'nullable|string|max:255|unique:platforms,slug',
         ]);
 
-        $data = $request->only('name', 'slug');
-
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($request->name);
-        } else {
-            $data['slug'] = Str::slug($request->slug);
-        }
-        
-        if (Platform::where('slug', $data['slug'])->exists()) {
-            $data['slug'] = $data['slug'] . '-' . Str::random(4);
-        }
+        $platform = new Platform();
+        $platform->name = $request->name;
+        $platform->slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->name);
 
         if ($request->hasFile('logo_image')) {
-            $originalName = pathinfo($request->file('logo_image')->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeName = Str::slug($originalName);
-            $extension = $request->file('logo_image')->getClientOriginalExtension();
-            $fileNameToStore = 'platform_logos/' . $safeName . '_' . time() . '.' . $extension;
+            $image = $request->file('logo_image');
+            $extension = $image->getClientOriginalExtension();
+            $original_logo_name = 'platform_logo_'.$platform->slug.'_'.time().'.'.$extension;
+            $webp_logo_name = 'platform_logo_'.$platform->slug.'_'.time().'.webp';
+
+            $original_logo_path_relative = 'assets/platforms/'.$original_logo_name;
+            $webp_logo_path_relative = 'assets/platforms/'.$webp_logo_name;
+
+            // Resize, encode and save original image to storage
+            $img_original = Image::make($image)->resize(200, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })->encode($extension, 85);
+            Storage::disk('public')->put($original_logo_path_relative, (string) $img_original);
+
+            // Resize, encode to WebP and save to storage
+            $img_webp = Image::make($image)->resize(200, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })->encode('webp', 85);
+            Storage::disk('public')->put($webp_logo_path_relative, (string) $img_webp);
             
-            $path = $request->file('logo_image')->storeAs('public', $fileNameToStore);
-            $data['logo_image_path'] = $fileNameToStore;
+            $platform->logo_image_path = $original_logo_path_relative; // DB'ye orijinalin yeni göreli yolunu kaydet
         }
 
-        Platform::create($data);
+        $platform->save();
 
         return redirect()->route('admin.platforms.index')->with('success', 'Platform başarıyla oluşturuldu.');
     }
@@ -104,40 +113,55 @@ class PlatformController extends Controller
     public function update(Request $request, Platform $platform)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:platforms,name,' . $platform->id,
+            'name' => 'required|string|max:255|unique:platforms,name,'.$platform->id,
             'logo_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5120',
-            'slug' => 'nullable|string|max:255|unique:platforms,slug,' . $platform->id,
+            'slug' => 'nullable|string|max:255|unique:platforms,slug,'.$platform->id,
         ]);
 
-        $data = $request->only('name', 'slug');
-
-        if ($request->filled('slug')) {
-            $data['slug'] = Str::slug($request->slug);
-        } else {
-            if ($platform->name !== $request->name) {
-                 $data['slug'] = Str::slug($request->name);
-            } else {
-                unset($data['slug']); 
-            }
-        }
-        
-        if (isset($data['slug']) && Platform::where('slug', $data['slug'])->where('id', '!=', $platform->id)->exists()) {
-            $data['slug'] = $data['slug'] . '-' . Str::random(4);
-        }
+        $platform->name = $request->name;
+        $platform->slug = $request->slug ? Str::slug($request->slug) : Str::slug($request->name);
 
         if ($request->hasFile('logo_image')) {
+            // Delete old logo files from storage
             if ($platform->logo_image_path) {
-                // Storage::delete('public/' . $platform->logo_image_path);
+                $old_original_logo_path = $platform->logo_image_path;
+                // Eski WebP yolunu bulmak için, orijinal path'in uzantısını değiştiriyoruz.
+                // Eğer orijinal path'in kendisi zaten .webp ise (eski bir kayıttan dolayı), bu durumda replaceLast bir şey yapmaz.
+                $old_webp_logo_path = Str::replaceLast(pathinfo($old_original_logo_path, PATHINFO_EXTENSION), 'webp', $old_original_logo_path);
+                
+                if (Storage::disk('public')->exists($old_original_logo_path)) {
+                    Storage::disk('public')->delete($old_original_logo_path);
+                }
+                // Orijinal ve WebP yolları farklıysa ve WebP dosyası varsa sil
+                if ($old_original_logo_path !== $old_webp_logo_path && Storage::disk('public')->exists($old_webp_logo_path)) {
+                    Storage::disk('public')->delete($old_webp_logo_path);
+                }
             }
-            $originalName = pathinfo($request->file('logo_image')->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeName = Str::slug($originalName);
-            $extension = $request->file('logo_image')->getClientOriginalExtension();
-            $fileNameToStore = 'platform_logos/' . $safeName . '_' . time() . '.' . $extension;
-            $path = $request->file('logo_image')->storeAs('public', $fileNameToStore);
-            $data['logo_image_path'] = $fileNameToStore;
+
+            $image = $request->file('logo_image');
+            $extension = $image->getClientOriginalExtension();
+            $original_logo_name = 'platform_logo_'.$platform->slug.'_updated_'.time().'.'.$extension;
+            $webp_logo_name = 'platform_logo_'.$platform->slug.'_updated_'.time().'.webp';
+
+            $original_logo_path_relative = 'assets/platforms/'.$original_logo_name;
+            $webp_logo_path_relative = 'assets/platforms/'.$webp_logo_name;
+
+            $img_original = Image::make($image)->resize(200, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })->encode($extension, 85);
+            Storage::disk('public')->put($original_logo_path_relative, (string) $img_original);
+
+            $img_webp = Image::make($image)->resize(200, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })->encode('webp', 85);
+            Storage::disk('public')->put($webp_logo_path_relative, (string) $img_webp);
+
+            $platform->logo_image_path = $original_logo_path_relative;
         }
 
-        $platform->update($data);
+        $platform->save();
 
         return redirect()->route('admin.platforms.index')->with('success', 'Platform başarıyla güncellendi.');
     }
@@ -151,7 +175,7 @@ class PlatformController extends Controller
     public function destroy(Platform $platform)
     {
         if ($platform->logo_image_path) {
-            // Storage::delete('public/' . $platform->logo_image_path);
+            Storage::delete('public/' . $platform->logo_image_path);
         }
         $platform->delete();
         return redirect()->route('admin.platforms.index')->with('success', 'Platform başarıyla silindi.');

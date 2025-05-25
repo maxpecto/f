@@ -150,8 +150,26 @@
                                                 <div class="card inline-top loaded portrait-card">
                                                     <div class="card-content-wrap">
                                                         <div class="card-image-content">
-                                                            <div class="image-card base-card-image">
-                                                                <img alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="/assets/series/poster/{{ $latest->poster }}">
+                                                            <div class="image-card base-card-image relative" style="padding-bottom: 150%;">
+                                                                @php
+                                                                    $originalPath = $latest->poster; // Veritabanındaki yolun zaten 'assets/series/poster/dizi.jpg' gibi olduğunu varsayıyoruz
+                                                                    $webpPath = Str::replaceLast(pathinfo($originalPath, PATHINFO_EXTENSION), 'webp', $originalPath);
+                                                                @endphp
+                                                                <picture>
+                                                                    @if (Storage::disk('public')->exists($webpPath))
+                                                                        <source srcset="{{ Storage::url($webpPath) }}" type="image/webp">
+                                                                    @endif
+                                                                    @if (Storage::disk('public')->exists($originalPath))
+                                                                        <source srcset="{{ Storage::url($originalPath) }}" type="image/{{ pathinfo($originalPath, PATHINFO_EXTENSION) }}">
+                                                                        <img alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image absolute inset-0 w-full h-full object-cover"
+                                                                             src="{{ Storage::url($originalPath) }}"
+                                                                             @if($loop->first) fetchpriority="high" @else loading="lazy" @endif>
+                                                                    @else
+                                                                        <img alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image absolute inset-0 w-full h-full object-cover"
+                                                                             src="{{ asset('assets/frontend/images/default_poster.jpg') }}"
+                                                                             @if($loop->first) fetchpriority="high" @else loading="lazy" @endif>
+                                                                    @endif
+                                                                </picture>
                                                             </div>
                                                             <div>
                                                                 <div class="card-overlay show-icon">

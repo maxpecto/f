@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\Items;
 use App\Models\Persons;
@@ -100,22 +101,53 @@ class MoviesController extends BackendController
 
         if ($new_poster_uploaded) {
             $extension_poster = $new_poster_uploaded->getClientOriginalExtension();
-                $file_movie_poster = 'movie_poster_'.$movies->id.'.'.$extension_poster;
-            Image::make($new_poster_uploaded)->resize(405,600)->save(public_path('/assets/movies/poster/'.$file_movie_poster));
-            if ($movies->poster && $movies->poster != 'default_poster.jpg' && File::exists(public_path('/assets/movies/poster/'.$movies->poster))) {
-                File::delete(public_path('/assets/movies/poster/'.$movies->poster));
-            }
-            $movies->poster = $file_movie_poster;
-        } elseif ($poster_url_provided) {
+            $original_poster_name = 'movie_poster_'.$movies->id.'.'.$extension_poster;
+            $webp_poster_name = 'movie_poster_'.$movies->id.'.webp';
+
+            $original_poster_path_relative = 'assets/movies/poster/'.$original_poster_name;
+            $webp_poster_path_relative = 'assets/movies/poster/'.$webp_poster_name;
+
+            // Save original image to storage
+            $img_original_poster = Image::make($new_poster_uploaded)->resize(405,600)->encode($extension_poster, 80);
+            Storage::disk('public')->put($original_poster_path_relative, (string) $img_original_poster);
+
+            // Save WebP version to storage
+            $img_webp_poster = Image::make($new_poster_uploaded)->resize(405,600)->encode('webp', 80);
+            Storage::disk('public')->put($webp_poster_path_relative, (string) $img_webp_poster);
+            
+            $movies->poster = $original_poster_path_relative; // DB'ye orijinalin yeni göreli yolunu kaydet
+
+        } else if ($poster_url_provided) {
+            $poster_url = $request->movie_poster_url;
             try {
-                $file_movie_poster = 'movie_poster_'.$movies->id.'.jpg';
-                Image::make($request->movie_poster_url)->resize(405,600)->save(public_path('/assets/movies/poster/'.$file_movie_poster));
-                if ($movies->poster && $movies->poster != 'default_poster.jpg' && $movies->poster != $file_movie_poster && File::exists(public_path('/assets/movies/poster/'.$movies->poster))) {
-                    File::delete(public_path('/assets/movies/poster/'.$movies->poster));
+                $poster_contents = file_get_contents($poster_url);
+                if ($poster_contents === false) {
+                    throw new \Exception("Görsel içeriği alınamadı.");
                 }
-                $movies->poster = $file_movie_poster;
-            } catch (\Intervention\Image\Exception\NotReadableException $e) {
-                // Hata durumunda mevcut poster korunur
+                $poster_extension = pathinfo($poster_url, PATHINFO_EXTENSION) ?: 'jpg'; // Extension yoksa jpg varsay
+                // Geçerli uzantıları kontrol et
+                if (!in_array(strtolower($poster_extension), ['jpeg', 'jpg', 'png', 'gif'])) {
+                    $poster_extension = 'jpg'; // Desteklenmiyorsa jpg olarak kaydet
+                }
+
+                $original_poster_name_from_url = 'movie_poster_url_'.$movies->id.'.'.$poster_extension;
+                $webp_poster_name_from_url = 'movie_poster_url_'.$movies->id.'.webp';
+
+                $original_poster_path_relative_from_url = 'assets/movies/poster/'.$original_poster_name_from_url;
+                $webp_poster_path_relative_from_url = 'assets/movies/poster/'.$webp_poster_name_from_url;
+
+                // Save original image from URL to storage
+                $img_original_poster_url = Image::make($poster_contents)->resize(405,600)->encode($poster_extension, 80);
+                Storage::disk('public')->put($original_poster_path_relative_from_url, (string) $img_original_poster_url);
+
+                // Save WebP version from URL to storage
+                $img_webp_poster_url = Image::make($poster_contents)->resize(405,600)->encode('webp', 80);
+                Storage::disk('public')->put($webp_poster_path_relative_from_url, (string) $img_webp_poster_url);
+
+                $movies->poster = $original_poster_path_relative_from_url; // DB'ye orijinalin yeni göreli yolunu kaydet
+            } catch (\Exception $e) {
+                // Log error or notify user
+                // Toastr()->error('Poster URL görseli işlenirken bir hata oluştu: '.$e->getMessage());
             }
         }
 
@@ -125,25 +157,55 @@ class MoviesController extends BackendController
 
         if ($new_backdrop_uploaded) {
             $extension_image = $new_backdrop_uploaded->getClientOriginalExtension();
-                $file_movie_image = 'movie_image_'.$movies->id.'.'.$extension_image;
-            Image::make($new_backdrop_uploaded)->resize(1000,600)->save(public_path('/assets/movies/backdrop/'.$file_movie_image));
-            if ($movies->backdrop && $movies->backdrop != 'default_backdrop.jpg' && File::exists(public_path('/assets/movies/backdrop/'.$movies->backdrop))) {
-                File::delete(public_path('/assets/movies/backdrop/'.$movies->backdrop));
-            }
-            $movies->backdrop = $file_movie_image;
+            $original_backdrop_name = 'movie_image_'.$movies->id.'.'.$extension_image;
+            $webp_backdrop_name = 'movie_image_'.$movies->id.'.webp';
+
+            $original_backdrop_path_relative = 'assets/movies/backdrop/'.$original_backdrop_name;
+            $webp_backdrop_path_relative = 'assets/movies/backdrop/'.$webp_backdrop_name;
+
+            // Save original image to storage
+            $img_original_backdrop = Image::make($new_backdrop_uploaded)->resize(1000,600)->encode($extension_image, 75);
+            Storage::disk('public')->put($original_backdrop_path_relative, (string) $img_original_backdrop);
+
+            // Save WebP version to storage
+            $img_webp_backdrop = Image::make($new_backdrop_uploaded)->resize(1000,600)->encode('webp', 75);
+            Storage::disk('public')->put($webp_backdrop_path_relative, (string) $img_webp_backdrop);
+
+            $movies->backdrop = $original_backdrop_path_relative; // DB'ye orijinalin yeni göreli yolunu kaydet
+
         } elseif ($backdrop_url_provided) {
-            try {
-                $file_movie_image = 'movie_image_'.$movies->id.'.jpg';
-                Image::make($request->movie_image_url)->resize(1000,600)->save(public_path('/assets/movies/backdrop/'.$file_movie_image));
-                if ($movies->backdrop && $movies->backdrop != 'default_backdrop.jpg' && $movies->backdrop != $file_movie_image && File::exists(public_path('/assets/movies/backdrop/'.$movies->backdrop))) {
-                    File::delete(public_path('/assets/movies/backdrop/'.$movies->backdrop));
+            $backdrop_url = $request->movie_image_url;
+             try {
+                $backdrop_contents = file_get_contents($backdrop_url);
+                if ($backdrop_contents === false) {
+                    throw new \Exception("Görsel içeriği alınamadı.");
                 }
-                $movies->backdrop = $file_movie_image;
-            } catch (\Intervention\Image\Exception\NotReadableException $e) {
-                // Hata durumunda mevcut backdrop korunur
+                $backdrop_extension = pathinfo($backdrop_url, PATHINFO_EXTENSION) ?: 'jpg';
+                 if (!in_array(strtolower($backdrop_extension), ['jpeg', 'jpg', 'png', 'gif'])) {
+                    $backdrop_extension = 'jpg';
+                }
+
+                $original_backdrop_name_from_url = 'movie_image_url_'.$movies->id.'.'.$backdrop_extension;
+                $webp_backdrop_name_from_url = 'movie_image_url_'.$movies->id.'.webp';
+
+                $original_backdrop_path_relative_from_url = 'assets/movies/backdrop/'.$original_backdrop_name_from_url;
+                $webp_backdrop_path_relative_from_url = 'assets/movies/backdrop/'.$webp_backdrop_name_from_url;
+
+                // Save original image from URL to storage
+                $img_original_backdrop_url = Image::make($backdrop_contents)->resize(1000,600)->encode($backdrop_extension, 75);
+                Storage::disk('public')->put($original_backdrop_path_relative_from_url, (string) $img_original_backdrop_url);
+
+                // Save WebP version from URL to storage
+                $img_webp_backdrop_url = Image::make($backdrop_contents)->resize(1000,600)->encode('webp', 75);
+                Storage::disk('public')->put($webp_backdrop_path_relative_from_url, (string) $img_webp_backdrop_url);
+
+                $movies->backdrop = $original_backdrop_path_relative_from_url; // DB'ye orijinalin yeni göreli yolunu kaydet
+            } catch (\Exception $e) {
+                // Toastr()->error('Backdrop URL görseli işlenirken bir hata oluştu: '.$e->getMessage());
             }
         }
-        $movies->save();
+        
+        $movies->save(); // Poster ve backdrop yollarını kaydet
 
         //Movies Actors
         if(isset($request->movie_actors)){
@@ -389,23 +451,72 @@ class MoviesController extends BackendController
         $poster_url_provided = $request->filled('movie_poster_url');
 
         if ($new_poster_uploaded) {
-            $extension_poster = $new_poster_uploaded->getClientOriginalExtension();
-                $file_movie_poster = 'movie_poster_'.$movies->id.'.'.$extension_poster;
-            Image::make($new_poster_uploaded)->resize(405,600)->save(public_path('/assets/movies/poster/'.$file_movie_poster));
-            if ($movies->poster && $movies->poster != 'default_poster.jpg' && File::exists(public_path('/assets/movies/poster/'.$movies->poster))) {
-                File::delete(public_path('/assets/movies/poster/'.$movies->poster));
-            }
-            $movies->poster = $file_movie_poster;
-        } elseif ($poster_url_provided) {
-            try {
-                $file_movie_poster = 'movie_poster_'.$movies->id.'.jpg';
-                Image::make($request->movie_poster_url)->resize(405,600)->save(public_path('/assets/movies/poster/'.$file_movie_poster));
-                if ($movies->poster && $movies->poster != 'default_poster.jpg' && $movies->poster != $file_movie_poster && File::exists(public_path('/assets/movies/poster/'.$movies->poster))) {
-                    File::delete(public_path('/assets/movies/poster/'.$movies->poster));
+            // Delete old poster files
+            if ($movies->poster) {
+                $old_original_poster_path = $movies->poster;
+                $old_webp_poster_path = Str::replaceLast(pathinfo($old_original_poster_path, PATHINFO_EXTENSION), 'webp', $old_original_poster_path);
+                if (Storage::disk('public')->exists($old_original_poster_path)) {
+                    Storage::disk('public')->delete($old_original_poster_path);
                 }
-                $movies->poster = $file_movie_poster;
-            } catch (\Intervention\Image\Exception\NotReadableException $e) {
-                // Hata durumunda mevcut poster korunur
+                if (Storage::disk('public')->exists($old_webp_poster_path)) {
+                    Storage::disk('public')->delete($old_webp_poster_path);
+                }
+            }
+
+            $extension_poster = $new_poster_uploaded->getClientOriginalExtension();
+            $original_poster_name = 'movie_poster_'.$movies->id.'_updated_'.time().'.'.$extension_poster;
+            $webp_poster_name = 'movie_poster_'.$movies->id.'_updated_'.time().'.webp';
+
+            $original_poster_path_relative = 'assets/movies/poster/'.$original_poster_name;
+            $webp_poster_path_relative = 'assets/movies/poster/'.$webp_poster_name;
+
+            $img_original_poster = Image::make($new_poster_uploaded)->resize(405,600)->encode($extension_poster, 80);
+            Storage::disk('public')->put($original_poster_path_relative, (string) $img_original_poster);
+
+            $img_webp_poster = Image::make($new_poster_uploaded)->resize(405,600)->encode('webp', 80);
+            Storage::disk('public')->put($webp_poster_path_relative, (string) $img_webp_poster);
+            
+            $movies->poster = $original_poster_path_relative;
+
+        } else if ($poster_url_provided && $request->movie_poster_url !== $movies->getRawOriginal('poster_url_field_if_exists')) { // Varsayımsal bir alan adı, URL'den yüklenenin değişip değişmediğini kontrol etmek için
+            // Delete old poster files if they came from a previous URL or upload
+            if ($movies->poster) {
+                 $old_original_poster_path = $movies->poster;
+                 $old_webp_poster_path = Str::replaceLast(pathinfo($old_original_poster_path, PATHINFO_EXTENSION), 'webp', $old_original_poster_path);
+                if (Storage::disk('public')->exists($old_original_poster_path)) {
+                    Storage::disk('public')->delete($old_original_poster_path);
+                }
+                if (Storage::disk('public')->exists($old_webp_poster_path)) {
+                    Storage::disk('public')->delete($old_webp_poster_path);
+                }
+            }
+            
+            $poster_url = $request->movie_poster_url;
+            try {
+                $poster_contents = file_get_contents($poster_url);
+                 if ($poster_contents === false) {
+                    throw new \Exception("Görsel içeriği alınamadı.");
+                }
+                $poster_extension = pathinfo($poster_url, PATHINFO_EXTENSION) ?: 'jpg';
+                if (!in_array(strtolower($poster_extension), ['jpeg', 'jpg', 'png', 'gif'])) {
+                    $poster_extension = 'jpg';
+                }
+
+                $original_poster_name_from_url = 'movie_poster_url_'.$movies->id.'_updated_'.time().'.'.$poster_extension;
+                $webp_poster_name_from_url = 'movie_poster_url_'.$movies->id.'_updated_'.time().'.webp';
+
+                $original_poster_path_relative_from_url = 'assets/movies/poster/'.$original_poster_name_from_url;
+                $webp_poster_path_relative_from_url = 'assets/movies/poster/'.$webp_poster_name_from_url;
+
+                $img_original_poster_url = Image::make($poster_contents)->resize(405,600)->encode($poster_extension, 80);
+                Storage::disk('public')->put($original_poster_path_relative_from_url, (string) $img_original_poster_url);
+
+                $img_webp_poster_url = Image::make($poster_contents)->resize(405,600)->encode('webp', 80);
+                Storage::disk('public')->put($webp_poster_path_relative_from_url, (string) $img_webp_poster_url);
+
+                $movies->poster = $original_poster_path_relative_from_url;
+            } catch (\Exception $e) {
+                // Toastr()->error('Poster URL görseli işlenirken bir hata oluştu: '.$e->getMessage());
             }
         }
 
@@ -414,25 +525,75 @@ class MoviesController extends BackendController
         $backdrop_url_provided = $request->filled('movie_image_url');
 
         if ($new_backdrop_uploaded) {
-            $extension_image = $new_backdrop_uploaded->getClientOriginalExtension();
-                $file_movie_image = 'movie_image_'.$movies->id.'.'.$extension_image;
-            Image::make($new_backdrop_uploaded)->resize(1000,600)->save(public_path('/assets/movies/backdrop/'.$file_movie_image));
-            if ($movies->backdrop && $movies->backdrop != 'default_backdrop.jpg' && File::exists(public_path('/assets/movies/backdrop/'.$movies->backdrop))) {
-                File::delete(public_path('/assets/movies/backdrop/'.$movies->backdrop));
-            }
-            $movies->backdrop = $file_movie_image;
-        } elseif ($backdrop_url_provided) {
-            try {
-                $file_movie_image = 'movie_image_'.$movies->id.'.jpg';
-                Image::make($request->movie_image_url)->resize(1000,600)->save(public_path('/assets/movies/backdrop/'.$file_movie_image));
-                if ($movies->backdrop && $movies->backdrop != 'default_backdrop.jpg' && $movies->backdrop != $file_movie_image && File::exists(public_path('/assets/movies/backdrop/'.$movies->backdrop))) {
-                    File::delete(public_path('/assets/movies/backdrop/'.$movies->backdrop));
+            // Delete old backdrop files
+            if ($movies->backdrop) {
+                $old_original_backdrop_path = $movies->backdrop;
+                $old_webp_backdrop_path = Str::replaceLast(pathinfo($old_original_backdrop_path, PATHINFO_EXTENSION), 'webp', $old_original_backdrop_path);
+                 if (Storage::disk('public')->exists($old_original_backdrop_path)) {
+                    Storage::disk('public')->delete($old_original_backdrop_path);
                 }
-                $movies->backdrop = $file_movie_image;
-            } catch (\Intervention\Image\Exception\NotReadableException $e) {
-                // Hata durumunda mevcut backdrop korunur
+                if (Storage::disk('public')->exists($old_webp_backdrop_path)) {
+                    Storage::disk('public')->delete($old_webp_backdrop_path);
+                }
+            }
+
+            $extension_backdrop = $new_backdrop_uploaded->getClientOriginalExtension();
+            $original_backdrop_name = 'movie_image_'.$movies->id.'_updated_'.time().'.'.$extension_backdrop;
+            $webp_backdrop_name = 'movie_image_'.$movies->id.'_updated_'.time().'.webp';
+
+            $original_backdrop_path_relative = 'assets/movies/backdrop/'.$original_backdrop_name;
+            $webp_backdrop_path_relative = 'assets/movies/backdrop/'.$webp_backdrop_name;
+
+            $img_original_backdrop = Image::make($new_backdrop_uploaded)->resize(1000,600)->encode($extension_backdrop, 75);
+            Storage::disk('public')->put($original_backdrop_path_relative, (string) $img_original_backdrop);
+
+            $img_webp_backdrop = Image::make($new_backdrop_uploaded)->resize(1000,600)->encode('webp', 75);
+            Storage::disk('public')->put($webp_backdrop_path_relative, (string) $img_webp_backdrop);
+
+            $movies->backdrop = $original_backdrop_path_relative;
+
+        } elseif ($backdrop_url_provided && $request->movie_image_url !== $movies->getRawOriginal('backdrop_url_field_if_exists')) { // Varsayımsal
+             // Delete old backdrop files
+            if ($movies->backdrop) {
+                $old_original_backdrop_path = $movies->backdrop;
+                $old_webp_backdrop_path = Str::replaceLast(pathinfo($old_original_backdrop_path, PATHINFO_EXTENSION), 'webp', $old_original_backdrop_path);
+                if (Storage::disk('public')->exists($old_original_backdrop_path)) {
+                    Storage::disk('public')->delete($old_original_backdrop_path);
+                }
+                if (Storage::disk('public')->exists($old_webp_backdrop_path)) {
+                    Storage::disk('public')->delete($old_webp_backdrop_path);
+                }
+            }
+
+            $backdrop_url = $request->movie_image_url;
+            try {
+                $backdrop_contents = file_get_contents($backdrop_url);
+                if ($backdrop_contents === false) {
+                    throw new \Exception("Görsel içeriği alınamadı.");
+                }
+                $backdrop_extension = pathinfo($backdrop_url, PATHINFO_EXTENSION) ?: 'jpg';
+                if (!in_array(strtolower($backdrop_extension), ['jpeg', 'jpg', 'png', 'gif'])) {
+                    $backdrop_extension = 'jpg';
+                }
+
+                $original_backdrop_name_from_url = 'movie_image_url_'.$movies->id.'_updated_'.time().'.'.$backdrop_extension;
+                $webp_backdrop_name_from_url = 'movie_image_url_'.$movies->id.'_updated_'.time().'.webp';
+
+                $original_backdrop_path_relative_from_url = 'assets/movies/backdrop/'.$original_backdrop_name_from_url;
+                $webp_backdrop_path_relative_from_url = 'assets/movies/backdrop/'.$webp_backdrop_name_from_url;
+
+                $img_original_backdrop_url = Image::make($backdrop_contents)->resize(1000,600)->encode($backdrop_extension, 75);
+                Storage::disk('public')->put($original_backdrop_path_relative_from_url, (string) $img_original_backdrop_url);
+
+                $img_webp_backdrop_url = Image::make($backdrop_contents)->resize(1000,600)->encode('webp', 75);
+                Storage::disk('public')->put($webp_backdrop_path_relative_from_url, (string) $img_webp_backdrop_url);
+
+                $movies->backdrop = $original_backdrop_path_relative_from_url;
+            } catch (\Exception $e) {
+                // Toastr()->error('Backdrop URL görseli işlenirken bir hata oluştu: '.$e->getMessage());
             }
         }
+        
         $movies->save();
 
         //Movies Actors

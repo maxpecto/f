@@ -102,9 +102,10 @@
             {{-- Player  --}}
             {{-- Ön Yükleme Video Oynatıcısı --}}
             @if(isset($activePreRollVideo) && $activePreRollVideo)
-                <div id="preroll-player-container" style="position: relative; background-color: black; overflow: hidden; z-index: 100; width: 100%;">
-                    <video id="preroll-video-element" style="width: 100%; height: auto; max-height: 70vh; display: block;" playsinline webkit-playsinline autoplay muted></video>
-                    {{-- Atlama Butonu (JavaScript ile eklenecek) --}}
+                <div id="preroll-player-container" style="position: relative; background-color: black; overflow: hidden; z-index: 100; width: 100%; aspect-ratio: 16/9; /* Aspect ratio için */">
+                    <video id="preroll-video-element" style="width: 100%; height: 100%; display: block;" playsinline webkit-playsinline preload="metadata"></video>
+                    <button id="custom-preroll-play-button" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10008; padding: 12px 25px; font-size: 18px; cursor: pointer; background-color: rgba(0,0,0,0.6); color: white; border: 1.5px solid white; border-radius: 8px; display: none;">OYNAT</button>
+                    {{-- Atlama Butonu ve tıklama katmanı JS ile yönetilecek --}}
                 </div>
             @endif
 
@@ -117,7 +118,26 @@
             <div class="w-full flex lg:px-10 px-0 text-white lg:space-x-6 space-x-0">
                 <div class="w-1/5 lg:block hidden">
                     <div class="w-full">
-                        <img alt="{{ $series->title }}" title="{{ $series->title }}" class="w-full rounded-t" src="/assets/series/poster/{{ $series->poster }}">
+                        @php
+                            $originalPath = $series->poster; // Veritabanındaki yol (örn: assets/series/poster/dizi.jpg)
+                            $webpPath = $originalPath ? Str::replaceLast(pathinfo($originalPath, PATHINFO_EXTENSION), 'webp', $originalPath) : null;
+                            $defaultPoster = asset('assets/frontend/images/default_poster.jpg');
+                        @endphp
+                        @if ($originalPath)
+                            <picture>
+                                @if ($webpPath && Storage::disk('public')->exists($webpPath))
+                                    <source srcset="{{ Storage::url($webpPath) }}" type="image/webp">
+                                @endif
+                                @if (Storage::disk('public')->exists($originalPath))
+                                    <source srcset="{{ Storage::url($originalPath) }}" type="image/{{ pathinfo($originalPath, PATHINFO_EXTENSION) }}">
+                                    <img alt="{{ $series->title }}" title="{{ $series->title }}" class="w-full rounded-t" src="{{ Storage::url($originalPath) }}">
+                                @else
+                                    <img alt="{{ $series->title }}" title="{{ $series->title }}" class="w-full rounded-t" src="{{ $defaultPoster }}">
+                                @endif
+                            </picture>
+                        @else
+                            <img alt="{{ $series->title }}" title="{{ $series->title }}" class="w-full rounded-t" src="{{ $defaultPoster }}">
+                        @endif
                     </div>
                 </div>
                 <div class="lg:w-4/5 w-full px-10 lg:px-0">
@@ -430,7 +450,26 @@
                                                 <div class="card-content-wrap">
                                                     <div class="card-image-content">
                                                         <div class="image-card base-card-image">
-                                                            <img alt="{{ $homerecommended->title }}" title="{{ $homerecommended->title }}" class="original-image" src="/assets/series/poster/{{ $homerecommended->poster }}">
+                                                            @php
+                                                                $relatedOriginalPath = $homerecommended->poster;
+                                                                $relatedWebpPath = $relatedOriginalPath ? Str::replaceLast(pathinfo($relatedOriginalPath, PATHINFO_EXTENSION), 'webp', $relatedOriginalPath) : null;
+                                                                $defaultPoster = asset('assets/frontend/images/default_poster.jpg');
+                                                            @endphp
+                                                            @if ($relatedOriginalPath)
+                                                                <picture>
+                                                                    @if ($relatedWebpPath && Storage::disk('public')->exists($relatedWebpPath))
+                                                                        <source srcset="{{ Storage::url($relatedWebpPath) }}" type="image/webp">
+                                                                    @endif
+                                                                    @if (Storage::disk('public')->exists($relatedOriginalPath))
+                                                                        <source srcset="{{ Storage::url($relatedOriginalPath) }}" type="image/{{ pathinfo($relatedOriginalPath, PATHINFO_EXTENSION) }}">
+                                                                        <img alt="{{ $homerecommended->title }}" title="{{ $homerecommended->title }}" class="original-image" src="{{ Storage::url($relatedOriginalPath) }}">
+                                                                    @else
+                                                                        <img alt="{{ $homerecommended->title }}" title="{{ $homerecommended->title }}" class="original-image" src="{{ $defaultPoster }}">
+                                                                    @endif
+                                                                </picture>
+                                                            @else
+                                                                <img alt="{{ $homerecommended->title }}" title="{{ $homerecommended->title }}" class="original-image" src="{{ $defaultPoster }}">
+                                                            @endif
                                                         </div>
                                                         <div>
                                                             <div class="card-overlay show-icon"></div>
@@ -750,74 +789,84 @@ document.addEventListener('DOMContentLoaded', function () {
     const prerollPlayerContainer = document.getElementById('preroll-player-container');
     const prerollVideoElement = document.getElementById('preroll-video-element');
     const mainPlayerContainer = document.getElementById('main-player-container');
+    const customPlayButton = document.getElementById('custom-preroll-play-button');
+    let skipButton = null; // skipButton'ı burada tanımla
+    let clickOverlay = null; // clickOverlay'ı burada tanımla
 
     console.log('Pre-roll data:', activePreRollVideo);
 
-    if (activePreRollVideo && prerollVideoElement && mainPlayerContainer) {
-        console.log('Pre-roll video will be played.');
-        // Ana oynatıcıyı gizle, pre-roll oynatıcısını göster (CSS zaten yapıyor olmalı ama emin olalım)
+    if (activePreRollVideo && prerollVideoElement && mainPlayerContainer && customPlayButton) {
         mainPlayerContainer.style.display = 'none';
-        prerollPlayerContainer.style.display = 'block'; // veya 'relative' ya da stil ne gerektiriyorsa
-
+        prerollPlayerContainer.style.display = 'block';
         prerollVideoElement.src = activePreRollVideo.video_url;
 
-        if (activePreRollVideo.target_url) {
-            prerollPlayerContainer.style.cursor = 'pointer'; // Tıklanabilir alanı kapsayıcıya ata
-            prerollPlayerContainer.addEventListener('click', function(event) {
-                // Eğer tıklama skip butonundan gelmiyorsa hedef URL'ye git
-                if (event.target !== skipButton) {
-                    window.open(activePreRollVideo.target_url, '_blank');
+        prerollVideoElement.addEventListener('canplay', function() {
+            customPlayButton.style.display = 'block';
+            console.log('Pre-roll video can play, play button shown.');
+        });
+
+        customPlayButton.addEventListener('click', function() {
+            prerollVideoElement.play().then(() => {
+                console.log('Pre-roll video playback started by user.');
+                customPlayButton.style.display = 'none';
+                if (clickOverlay) clickOverlay.style.display = 'block';
+
+                // Geri sayımı video oynamaya BAŞLADIKTAN sonra başlat
+                if (activePreRollVideo.skippable_after_seconds && activePreRollVideo.skippable_after_seconds > 0 && !skipButton) { // !skipButton kontrolü tekrar tekrar oluşturmayı engeller
+                    skipButton = document.createElement('button');
+                    skipButton.classList.add('skip-button');
+                    skipButton.innerText = `Reklamı Atla (${activePreRollVideo.skippable_after_seconds}s)`;
+                    skipButton.disabled = true;
+                    skipButton.style.zIndex = '10010';
+                    prerollPlayerContainer.appendChild(skipButton);
+
+                    let countdown = activePreRollVideo.skippable_after_seconds;
+                    const interval = setInterval(() => {
+                        countdown--;
+                        if (countdown > 0) {
+                            skipButton.innerText = `Reklamı Atla (${countdown}s)`;
+                        } else {
+                            clearInterval(interval);
+                            skipButton.innerText = 'Reklamı Atla';
+                            skipButton.disabled = false;
+                            skipButton.addEventListener('click', function(event) {
+                                event.stopPropagation();
+                                playMainVideo();
+                            });
+                        }
+                    }, 1000);
                 }
+            }).catch(error => {
+                console.error('Pre-roll video playback failed:', error);
+                playMainVideo();
             });
-        }
+        });
 
-        let skipButton = null;
-        if (activePreRollVideo.skippable_after_seconds && activePreRollVideo.skippable_after_seconds > 0) {
-            skipButton = document.createElement('button');
-            skipButton.classList.add('skip-button');
-            skipButton.innerText = `Reklamı Atla (${activePreRollVideo.skippable_after_seconds}s)`;
-            skipButton.disabled = true;
-            // Skip butonunu prerollPlayerContainer'ın İÇİNE ekle, video elementinin değil
-            prerollPlayerContainer.appendChild(skipButton); 
-
-            let countdown = activePreRollVideo.skippable_after_seconds;
-            const interval = setInterval(() => {
-                countdown--;
-                if (countdown > 0) {
-                    skipButton.innerText = `Reklamı Atla (${countdown}s)`;
-                } else {
-                    clearInterval(interval);
-                    skipButton.innerText = 'Reklamı Atla';
-                    skipButton.disabled = false;
-                    skipButton.addEventListener('click', playMainVideo);
-                }
-            }, 1000);
+        if (activePreRollVideo.target_url) {
+            clickOverlay = document.createElement('a');
+            clickOverlay.id = 'preroll-click-overlay';
+            clickOverlay.href = activePreRollVideo.target_url;
+            clickOverlay.target = '_blank';
+            clickOverlay.style.cssText = 'position:absolute; top:0; left:0; width:100%; height: calc(100% - 50px); z-index:10005; cursor:pointer; display:none;';
+            prerollPlayerContainer.appendChild(clickOverlay);
         }
 
         prerollVideoElement.addEventListener('ended', playMainVideo);
         prerollVideoElement.addEventListener('error', function() {
             console.error('Pre-roll video error. Skipping to main content.');
+            customPlayButton.style.display = 'none'; // Hata durumunda da butonu gizle
             playMainVideo();
         });
 
-        prerollVideoElement.play().then(() => {
-            console.log('Pre-roll video playback started.');
-        }).catch(error => {
-            console.error('Pre-roll video playback failed:', error);
-            playMainVideo();
-        });
+        // Geri sayım başlatma mantığı yukarıya, play().then() içine taşındı.
+        // if (activePreRollVideo.skippable_after_seconds && activePreRollVideo.skippable_after_seconds > 0) { ... }
 
     } else {
         console.log('No active pre-roll video or player elements not found. Ensuring main player is visible.');
         if (prerollPlayerContainer) prerollPlayerContainer.style.display = 'none';
         if (mainPlayerContainer) mainPlayerContainer.style.display = 'block';
-        // Eğer pre-roll yoksa ana oynatıcıyı (Semantic UI) initialize etmeyi deneyebiliriz.
-        // Ancak bu genellikle sayfa yüklendiğinde zaten oluyor olmalı.
-        // Eğer $('.ui.embed').embed(); zaten varsa, tekrar çağırmak sorun yaratabilir.
-        // Sadece emin olmak için, eğer ana oynatıcı görünmüyorsa diye bir kontrol eklenebilir.
         const semanticEmbed = mainPlayerContainer ? mainPlayerContainer.querySelector('.ui.embed') : null;
         if (semanticEmbed && !semanticEmbed.classList.contains('active')){
-             // $(semanticEmbed).embed(); // jQuery bağımlılığı var, ve zaten yukarıda yapılıyor olabilir.
              console.log('Attempting to initialize Semantic UI embed if not active.');
         }
     }
@@ -833,20 +882,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (semanticEmbed) {
                 console.log('Main player (Semantic UI embed) made visible. Attempting to reset and play.');
                 if (window.jQuery) {
-                    jQuery(semanticEmbed).embed('reset'); // Oynatıcıyı sıfırla
-                    // Kısa bir gecikme sonrası oynatmayı dene
+                    jQuery(semanticEmbed).embed('reset');
                     setTimeout(function() {
                         console.log('Attempting to play Semantic UI embed after reset.');
                         jQuery(semanticEmbed).embed('play');
-                        // Alternatif olarak, placeholder'a tıklamayı simüle edebiliriz eğer varsa
-                        // const placeholder = jQuery(semanticEmbed).find('.placeholder');
-                        // if (placeholder.length) {
-                        //     console.log('Placeholder found, attempting to click it.');
-                        //     placeholder.trigger('click');
-                        // } else {
-                        //     jQuery(semanticEmbed).embed('play');
-                        // }
-                    }, 100); // 100ms gecikme
+                    }, 100);
                 } else {
                     console.warn('jQuery not found, cannot programmatically play Semantic UI embed.');
                 }

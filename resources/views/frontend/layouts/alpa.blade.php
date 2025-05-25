@@ -38,7 +38,7 @@
         </button> --}}
         {!! Form::close() !!}
         {{-- Live Search Results Area --}}
-        <div id="liveSearchResults" class="absolute w-full bg-gray-700 border border-gray-600 rounded-b-lg shadow-xl mt-1 z-50" style="display: none; max-height: 400px; overflow-y: auto;">
+        <div id="liveSearchResults" class="absolute w-full bg-gray-700 border border-gray-600 rounded-b-lg shadow-xl mt-1 z-50" style="min-height: 100px; max-height: 400px; overflow-y: auto; display: none;">
             {{-- Results will be injected here by JavaScript --}}
         </div>
     </div>
@@ -61,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const formData = new FormData(searchForm);
                 const params = new URLSearchParams(formData).toString();
 
+                resultsContainer.style.display = 'block'; // Arama başladığında görünür yap
+                resultsContainer.innerHTML = '<div class="p-3 text-gray-400">{{ __("Yükleniyor...") }}</div>'; // Yükleniyor mesajı
+
                 fetch(`/search?${params}&source=live_search`, { // source=live_search gibi bir parametre ekleyerek backend'in AJAX isteğini anlamasını sağlayabiliriz
                     method: 'GET',
                     headers: {
@@ -75,16 +78,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(html => {
                     resultsContainer.innerHTML = html;
-                    resultsContainer.style.display = 'block';
+                    // resultsContainer.style.display = 'block'; // Zaten yukarıda block yapıldı
                 })
                 .catch(error => {
                     console.error('Canlı arama sırasında hata:', error);
                     resultsContainer.innerHTML = '<div class="p-3 text-gray-400">{{ __("Arama sırasında bir hata oluştu.") }}</div>';
-                    resultsContainer.style.display = 'block';
+                    // resultsContainer.style.display = 'block'; // Zaten yukarıda block yapıldı
                 });
             }, 300); // 300ms gecikme
         } else {
-            resultsContainer.style.display = 'none';
+            resultsContainer.style.display = 'none'; // Karakter sayısı yetersizse veya input boşsa gizle
             resultsContainer.innerHTML = '';
         }
     });

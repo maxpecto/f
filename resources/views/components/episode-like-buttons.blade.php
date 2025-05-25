@@ -1,10 +1,17 @@
+@props([
+    'items', // Bu $episode olacak
+    'totalLikes',
+    'totalDislikes',
+    'isLikedByCurrentUser', // Yeni prop
+    'isDislikedByCurrentUser' // Yeni prop
+])
 
 <button type="submit" class="focus:outline-none" id="like" data-id="{{ $items->id }}">
-    <div class="like flex items-center space-x-1 @auth {{  $items->isEpisodeLikedBy(current_user()) ? 'text-yellow-400' : 'text-white'  }} @endauth"><span class="iconify" data-icon="ant-design:like-filled" data-inline="false"></span><span id="count_like">{{ $totalLikes }}</span></div>
+    <div class="like flex items-center space-x-1 @auth {{ $isLikedByCurrentUser ? 'text-yellow-400' : 'text-white'  }} @else text-white @endauth"><span class="iconify" data-icon="ant-design:like-filled" data-inline="false"></span><span id="count_like">{{ $totalLikes }}</span></div>
 </button>
 
 <button type="submit" class="focus:outline-none" id="dislike" data-id="{{ $items->id }}">
-    <div class="dislike flex items-center space-x-1 @auth {{ $items->isEpisodeDislikedBy(current_user()) ? 'text-yellow-400' : 'text-white' }} @endauth"><span class="iconify" data-icon="ant-design:dislike-filled" data-inline="false"></span><span id="count_dislike">{{ $totalDislikes }}</span></div>
+    <div class="dislike flex items-center space-x-1 @auth {{ $isDislikedByCurrentUser ? 'text-yellow-400' : 'text-white' }} @else text-white @endauth"><span class="iconify" data-icon="ant-design:dislike-filled" data-inline="false"></span><span id="count_dislike">{{ $totalDislikes }}</span></div>
 </button>
 
 <script>

@@ -248,7 +248,7 @@
                             <div class="block border-2 rounded border-yellow-400 mb-2">
                             </div>
                             <div class="flex mb-2 justify-end items-center space-x-6 text-base">
-                                <x-episode-like-buttons :items="$episode" :totalLikes="$totalLikes" :totalDislikes="$totalDislikes"/>
+                                {{-- <x-episode-like-buttons :items="$episode" :totalLikes="$totalLikes" :totalDislikes="$totalDislikes" :isLikedByCurrentUser="$is_liked_by_current_user" :isDislikedByCurrentUser="$is_disliked_by_current_user"/> --}}
                             </div>
                         </div>
                     </div>
@@ -470,7 +470,11 @@
                                     <li class="my-4">
                                         <div class="flex space-x-4">
                                             <div class="w-20 " >
-                                                <img src="{{ asset('/assets/users/') }}{{ getUsername($singleComments->users_id)->profile_img }}" class="w-15 mx-auto rounded-full border-2 border-yellow-500 border-transparent">
+                                                @if ($singleComments->user)
+                                                    <img src="{{ asset('/assets/users/') }}{{ $singleComments->user->profile_img }}" class="w-15 mx-auto rounded-full border-2 border-yellow-500 border-transparent">
+                                                @else
+                                                    <img src="{{ asset('/assets/users/default.png') }}" class="w-15 mx-auto rounded-full border-2 border-yellow-500 border-transparent">
+                                                @endif
                                             </div>
                                             <div class="w-full bg-gray-700 px-4 py-3 rounded" id="comment_btn">
                                                 @auth
@@ -483,7 +487,14 @@
                                                     @endif
                                                 @endauth
                                                 <div class="@auth @if($singleComments->users_id != Auth::user()->id)  @if($singleComments->spoiler == 1)hidden @endif @endif @endauth" id="comment_box_{{ $singleComments->id }}">
-                                                    <div class="pb-1"><span class="text-white text-yellow-500 font-bold pr-2"><a href="/&#64;{{ getUsername($singleComments->users_id)->username }}">{{ getUsername($singleComments->users_id)->username }}</a></span> <span class="text-white text-xs">{{ $singleComments->created_at->diffForHumans() }}</span></div>
+                                                    <div class="pb-1">
+                                                        @if ($singleComments->user)
+                                                            <span class="text-white text-yellow-500 font-bold pr-2"><a href="/&#64;{{ $singleComments->user->username }}">{{ $singleComments->user->username }}</a></span>
+                                                        @else
+                                                            <span class="text-white text-yellow-500 font-bold pr-2">Kullanıcı Bulunamadı</span>
+                                                        @endif
+                                                        <span class="text-white text-xs">{{ $singleComments->created_at->diffForHumans() }}</span>
+                                                    </div>
                                                     <span class="text-white leading-5 text-sm ">
                                                         {{$singleComments->comments}}
                                                     </span>

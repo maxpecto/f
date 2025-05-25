@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\Items;
 use App\Models\Persons;
@@ -91,24 +92,42 @@ class SeriesController extends BackendController
 
         if ($new_poster_uploaded) {
             $extension_poster = $new_poster_uploaded->getClientOriginalExtension();
-                $file_series_poster = 'series_poster_'.$series->id.'.'.$extension_poster;
-            Image::make($new_poster_uploaded)->resize(405,600)->save(public_path('/assets/series/poster/'.$file_series_poster));
-            // Eski posteri sil (default değilse)
-            if ($series->poster && $series->poster != 'default_poster.jpg' && File::exists(public_path('/assets/series/poster/'.$series->poster))) {
-                File::delete(public_path('/assets/series/poster/'.$series->poster));
-            }
-            $series->poster = $file_series_poster;
+            $original_poster_name = 'series_poster_'.$series->id.'.'.$extension_poster;
+            $webp_poster_name = 'series_poster_'.$series->id.'.webp';
+
+            $original_poster_path_relative = 'assets/series/poster/'.$original_poster_name;
+            $webp_poster_path_relative = 'assets/series/poster/'.$webp_poster_name;
+
+            $img_original_poster = Image::make($new_poster_uploaded)->resize(405,600)->encode($extension_poster, 80);
+            Storage::disk('public')->put($original_poster_path_relative, (string) $img_original_poster);
+
+            $img_webp_poster = Image::make($new_poster_uploaded)->resize(405,600)->encode('webp', 80);
+            Storage::disk('public')->put($webp_poster_path_relative, (string) $img_webp_poster);
+            
+            $series->poster = $original_poster_path_relative;
         } elseif ($poster_url_provided) {
+            $poster_url = $request->series_poster_url;
             try {
-                $file_series_poster = 'series_poster_'.$series->id.'.jpg'; // Dışarıdan gelen resimler için .jpg varsayalım
-                Image::make($request->series_poster_url)->resize(405,600)->save(public_path('/assets/series/poster/'.$file_series_poster));
-                // Eski posteri sil (default değilse)
-                if ($series->poster && $series->poster != 'default_poster.jpg' && $series->poster != $file_series_poster && File::exists(public_path('/assets/series/poster/'.$series->poster))) {
-                    File::delete(public_path('/assets/series/poster/'.$series->poster));
-                }
-                $series->poster = $file_series_poster;
-            } catch (\Intervention\Image\Exception\NotReadableException $e) {
-                // Hata durumunda mevcut poster korunur
+                $poster_contents = file_get_contents($poster_url);
+                if ($poster_contents === false) throw new \Exception("Görsel içeriği alınamadı.");
+                $poster_extension = pathinfo($poster_url, PATHINFO_EXTENSION) ?: 'jpg';
+                if (!in_array(strtolower($poster_extension), ['jpeg', 'jpg', 'png', 'gif'])) $poster_extension = 'jpg';
+
+                $original_poster_name_from_url = 'series_poster_url_'.$series->id.'.'.$poster_extension;
+                $webp_poster_name_from_url = 'series_poster_url_'.$series->id.'.webp';
+
+                $original_poster_path_relative_from_url = 'assets/series/poster/'.$original_poster_name_from_url;
+                $webp_poster_path_relative_from_url = 'assets/series/poster/'.$webp_poster_name_from_url;
+
+                $img_original_poster_url = Image::make($poster_contents)->resize(405,600)->encode($poster_extension, 80);
+                Storage::disk('public')->put($original_poster_path_relative_from_url, (string) $img_original_poster_url);
+
+                $img_webp_poster_url = Image::make($poster_contents)->resize(405,600)->encode('webp', 80);
+                Storage::disk('public')->put($webp_poster_path_relative_from_url, (string) $img_webp_poster_url);
+
+                $series->poster = $original_poster_path_relative_from_url;
+            } catch (\Exception $e) {
+                // Toastr()->error('Poster URL işlenemedi: '.$e->getMessage());
             }
         }
 
@@ -118,22 +137,42 @@ class SeriesController extends BackendController
 
         if ($new_backdrop_uploaded) {
             $extension_image = $new_backdrop_uploaded->getClientOriginalExtension();
-                $file_series_image = 'series_image_'.$series->id.'.'.$extension_image;
-            Image::make($new_backdrop_uploaded)->resize(1000,600)->save(public_path('/assets/series/backdrop/'.$file_series_image));
-            if ($series->backdrop && $series->backdrop != 'default_backdrop.jpg' && File::exists(public_path('/assets/series/backdrop/'.$series->backdrop))) {
-                File::delete(public_path('/assets/series/backdrop/'.$series->backdrop));
-            }
-            $series->backdrop = $file_series_image;
+            $original_backdrop_name = 'series_image_'.$series->id.'.'.$extension_image;
+            $webp_backdrop_name = 'series_image_'.$series->id.'.webp';
+
+            $original_backdrop_path_relative = 'assets/series/backdrop/'.$original_backdrop_name;
+            $webp_backdrop_path_relative = 'assets/series/backdrop/'.$webp_backdrop_name;
+
+            $img_original_backdrop = Image::make($new_backdrop_uploaded)->resize(1000,600)->encode($extension_image, 75);
+            Storage::disk('public')->put($original_backdrop_path_relative, (string) $img_original_backdrop);
+
+            $img_webp_backdrop = Image::make($new_backdrop_uploaded)->resize(1000,600)->encode('webp', 75);
+            Storage::disk('public')->put($webp_backdrop_path_relative, (string) $img_webp_backdrop);
+
+            $series->backdrop = $original_backdrop_path_relative;
         } elseif ($backdrop_url_provided) {
+            $backdrop_url = $request->series_image_url;
             try {
-                $file_series_image = 'series_image_'.$series->id.'.jpg';
-                Image::make($request->series_image_url)->resize(1000,600)->save(public_path('/assets/series/backdrop/'.$file_series_image));
-                if ($series->backdrop && $series->backdrop != 'default_backdrop.jpg' && $series->backdrop != $file_series_image && File::exists(public_path('/assets/series/backdrop/'.$series->backdrop))) {
-                    File::delete(public_path('/assets/series/backdrop/'.$series->backdrop));
-                }
-                $series->backdrop = $file_series_image;
-            } catch (\Intervention\Image\Exception\NotReadableException $e) {
-                // Hata durumunda mevcut backdrop korunur.
+                $backdrop_contents = file_get_contents($backdrop_url);
+                if ($backdrop_contents === false) throw new \Exception("Görsel içeriği alınamadı.");
+                $backdrop_extension = pathinfo($backdrop_url, PATHINFO_EXTENSION) ?: 'jpg';
+                if (!in_array(strtolower($backdrop_extension), ['jpeg', 'jpg', 'png', 'gif'])) $backdrop_extension = 'jpg';
+
+                $original_backdrop_name_from_url = 'series_image_url_'.$series->id.'.'.$backdrop_extension;
+                $webp_backdrop_name_from_url = 'series_image_url_'.$series->id.'.webp';
+
+                $original_backdrop_path_relative_from_url = 'assets/series/backdrop/'.$original_backdrop_name_from_url;
+                $webp_backdrop_path_relative_from_url = 'assets/series/backdrop/'.$webp_backdrop_name_from_url;
+
+                $img_original_backdrop_url = Image::make($backdrop_contents)->resize(1000,600)->encode($backdrop_extension, 75);
+                Storage::disk('public')->put($original_backdrop_path_relative_from_url, (string) $img_original_backdrop_url);
+
+                $img_webp_backdrop_url = Image::make($backdrop_contents)->resize(1000,600)->encode('webp', 75);
+                Storage::disk('public')->put($webp_backdrop_path_relative_from_url, (string) $img_webp_backdrop_url);
+
+                $series->backdrop = $original_backdrop_path_relative_from_url;
+            } catch (\Exception $e) {
+                // Toastr()->error('Backdrop URL işlenemedi: '.$e->getMessage());
             }
         }
         $series->save(); // Resim adları güncellendiyse tekrar kaydet
@@ -369,25 +408,57 @@ class SeriesController extends BackendController
         $poster_url_provided = $request->filled('series_poster_url');
 
         if ($new_poster_uploaded) {
-            $extension_poster = $new_poster_uploaded->getClientOriginalExtension();
-                $file_series_poster = 'series_poster_'.$series->id.'.'.$extension_poster;
-            Image::make($new_poster_uploaded)->resize(405,600)->save(public_path('/assets/series/poster/'.$file_series_poster));
-            // Eski posteri sil (default değilse)
-            if ($series->poster && $series->poster != 'default_poster.jpg' && File::exists(public_path('/assets/series/poster/'.$series->poster))) {
-                File::delete(public_path('/assets/series/poster/'.$series->poster));
+            if ($series->poster) {
+                $old_original_poster_path = $series->poster;
+                $old_webp_poster_path = Str::replaceLast(pathinfo($old_original_poster_path, PATHINFO_EXTENSION), 'webp', $old_original_poster_path);
+                if (Storage::disk('public')->exists($old_original_poster_path)) Storage::disk('public')->delete($old_original_poster_path);
+                if (Storage::disk('public')->exists($old_webp_poster_path)) Storage::disk('public')->delete($old_webp_poster_path);
             }
-            $series->poster = $file_series_poster;
-        } elseif ($poster_url_provided) {
+
+            $extension_poster = $new_poster_uploaded->getClientOriginalExtension();
+            $original_poster_name = 'series_poster_'.$series->id.'_updated_'.time().'.'.$extension_poster;
+            $webp_poster_name = 'series_poster_'.$series->id.'_updated_'.time().'.webp';
+
+            $original_poster_path_relative = 'assets/series/poster/'.$original_poster_name;
+            $webp_poster_path_relative = 'assets/series/poster/'.$webp_poster_name;
+
+            $img_original_poster = Image::make($new_poster_uploaded)->resize(405,600)->encode($extension_poster, 80);
+            Storage::disk('public')->put($original_poster_path_relative, (string) $img_original_poster);
+
+            $img_webp_poster = Image::make($new_poster_uploaded)->resize(405,600)->encode('webp', 80);
+            Storage::disk('public')->put($webp_poster_path_relative, (string) $img_webp_poster);
+            
+            $series->poster = $original_poster_path_relative;
+        } elseif ($poster_url_provided && $request->series_poster_url !== $series->getRawOriginal('poster_url_field_if_exists')) { // Varsayım
+            if ($series->poster) {
+                 $old_original_poster_path = $series->poster;
+                 $old_webp_poster_path = Str::replaceLast(pathinfo($old_original_poster_path, PATHINFO_EXTENSION), 'webp', $old_original_poster_path);
+                if (Storage::disk('public')->exists($old_original_poster_path)) Storage::disk('public')->delete($old_original_poster_path);
+                if (Storage::disk('public')->exists($old_webp_poster_path)) Storage::disk('public')->delete($old_webp_poster_path);
+            }
+            
+            $poster_url = $request->series_poster_url;
             try {
-                $file_series_poster = 'series_poster_'.$series->id.'.jpg'; // Dışarıdan gelen resimler için .jpg varsayalım
-                Image::make($request->series_poster_url)->resize(405,600)->save(public_path('/assets/series/poster/'.$file_series_poster));
-                // Eski posteri sil (default değilse)
-                if ($series->poster && $series->poster != 'default_poster.jpg' && $series->poster != $file_series_poster && File::exists(public_path('/assets/series/poster/'.$series->poster))) {
-                    File::delete(public_path('/assets/series/poster/'.$series->poster));
-                }
-                $series->poster = $file_series_poster;
-            } catch (\Intervention\Image\Exception\NotReadableException $e) {
-                // Hata durumunda mevcut poster korunur
+                $poster_contents = file_get_contents($poster_url);
+                if ($poster_contents === false) throw new \Exception("Görsel içeriği alınamadı.");
+                $poster_extension = pathinfo($poster_url, PATHINFO_EXTENSION) ?: 'jpg';
+                if (!in_array(strtolower($poster_extension), ['jpeg', 'jpg', 'png', 'gif'])) $poster_extension = 'jpg';
+
+                $original_poster_name_from_url = 'series_poster_url_'.$series->id.'_updated_'.time().'.'.$poster_extension;
+                $webp_poster_name_from_url = 'series_poster_url_'.$series->id.'_updated_'.time().'.webp';
+
+                $original_poster_path_relative_from_url = 'assets/series/poster/'.$original_poster_name_from_url;
+                $webp_poster_path_relative_from_url = 'assets/series/poster/'.$webp_poster_name_from_url;
+
+                $img_original_poster_url = Image::make($poster_contents)->resize(405,600)->encode($poster_extension, 80);
+                Storage::disk('public')->put($original_poster_path_relative_from_url, (string) $img_original_poster_url);
+
+                $img_webp_poster_url = Image::make($poster_contents)->resize(405,600)->encode('webp', 80);
+                Storage::disk('public')->put($webp_poster_path_relative_from_url, (string) $img_webp_poster_url);
+
+                $series->poster = $original_poster_path_relative_from_url;
+            } catch (\Exception $e) {
+                // Toastr()->error('Poster URL işlenemedi: '.$e->getMessage());
             }
         }
 
@@ -396,23 +467,57 @@ class SeriesController extends BackendController
         $backdrop_url_provided = $request->filled('series_image_url');
 
         if ($new_backdrop_uploaded) {
-            $extension_image = $new_backdrop_uploaded->getClientOriginalExtension();
-                $file_series_image = 'series_image_'.$series->id.'.'.$extension_image;
-            Image::make($new_backdrop_uploaded)->resize(1000,600)->save(public_path('/assets/series/backdrop/'.$file_series_image));
-            if ($series->backdrop && $series->backdrop != 'default_backdrop.jpg' && File::exists(public_path('/assets/series/backdrop/'.$series->backdrop))) {
-                File::delete(public_path('/assets/series/backdrop/'.$series->backdrop));
+            if ($series->backdrop) {
+                $old_original_backdrop_path = $series->backdrop;
+                $old_webp_backdrop_path = Str::replaceLast(pathinfo($old_original_backdrop_path, PATHINFO_EXTENSION), 'webp', $old_original_backdrop_path);
+                if (Storage::disk('public')->exists($old_original_backdrop_path)) Storage::disk('public')->delete($old_original_backdrop_path);
+                if (Storage::disk('public')->exists($old_webp_backdrop_path)) Storage::disk('public')->delete($old_webp_backdrop_path);
             }
-            $series->backdrop = $file_series_image;
-        } elseif ($backdrop_url_provided) {
+
+            $extension_backdrop = $new_backdrop_uploaded->getClientOriginalExtension();
+            $original_backdrop_name = 'series_image_'.$series->id.'_updated_'.time().'.'.$extension_backdrop;
+            $webp_backdrop_name = 'series_image_'.$series->id.'_updated_'.time().'.webp';
+
+            $original_backdrop_path_relative = 'assets/series/backdrop/'.$original_backdrop_name;
+            $webp_backdrop_path_relative = 'assets/series/backdrop/'.$webp_backdrop_name;
+
+            $img_original_backdrop = Image::make($new_backdrop_uploaded)->resize(1000,600)->encode($extension_backdrop, 75);
+            Storage::disk('public')->put($original_backdrop_path_relative, (string) $img_original_backdrop);
+
+            $img_webp_backdrop = Image::make($new_backdrop_uploaded)->resize(1000,600)->encode('webp', 75);
+            Storage::disk('public')->put($webp_backdrop_path_relative, (string) $img_webp_backdrop);
+
+            $series->backdrop = $original_backdrop_path_relative;
+        } elseif ($backdrop_url_provided && $request->series_image_url !== $series->getRawOriginal('backdrop_url_field_if_exists')) { // Varsayım
+            if ($series->backdrop) {
+                $old_original_backdrop_path = $series->backdrop;
+                $old_webp_backdrop_path = Str::replaceLast(pathinfo($old_original_backdrop_path, PATHINFO_EXTENSION), 'webp', $old_original_backdrop_path);
+                if (Storage::disk('public')->exists($old_original_backdrop_path)) Storage::disk('public')->delete($old_original_backdrop_path);
+                if (Storage::disk('public')->exists($old_webp_backdrop_path)) Storage::disk('public')->delete($old_webp_backdrop_path);
+            }
+
+            $backdrop_url = $request->series_image_url;
             try {
-                $file_series_image = 'series_image_'.$series->id.'.jpg';
-                Image::make($request->series_image_url)->resize(1000,600)->save(public_path('/assets/series/backdrop/'.$file_series_image));
-                if ($series->backdrop && $series->backdrop != 'default_backdrop.jpg' && $series->backdrop != $file_series_image && File::exists(public_path('/assets/series/backdrop/'.$series->backdrop))) {
-                    File::delete(public_path('/assets/series/backdrop/'.$series->backdrop));
-                }
-                $series->backdrop = $file_series_image;
-            } catch (\Intervention\Image\Exception\NotReadableException $e) {
-                // Hata durumunda mevcut backdrop korunur.
+                $backdrop_contents = file_get_contents($backdrop_url);
+                if ($backdrop_contents === false) throw new \Exception("Görsel içeriği alınamadı.");
+                $backdrop_extension = pathinfo($backdrop_url, PATHINFO_EXTENSION) ?: 'jpg';
+                if (!in_array(strtolower($backdrop_extension), ['jpeg', 'jpg', 'png', 'gif'])) $backdrop_extension = 'jpg';
+
+                $original_backdrop_name_from_url = 'series_image_url_'.$series->id.'_updated_'.time().'.'.$backdrop_extension;
+                $webp_backdrop_name_from_url = 'series_image_url_'.$series->id.'_updated_'.time().'.webp';
+
+                $original_backdrop_path_relative_from_url = 'assets/series/backdrop/'.$original_backdrop_name_from_url;
+                $webp_backdrop_path_relative_from_url = 'assets/series/backdrop/'.$webp_backdrop_name_from_url;
+
+                $img_original_backdrop_url = Image::make($backdrop_contents)->resize(1000,600)->encode($backdrop_extension, 75);
+                Storage::disk('public')->put($original_backdrop_path_relative_from_url, (string) $img_original_backdrop_url);
+
+                $img_webp_backdrop_url = Image::make($backdrop_contents)->resize(1000,600)->encode('webp', 75);
+                Storage::disk('public')->put($webp_backdrop_path_relative_from_url, (string) $img_webp_backdrop_url);
+
+                $series->backdrop = $original_backdrop_path_relative_from_url;
+            } catch (\Exception $e) {
+                // Toastr()->error('Backdrop URL işlenemedi: '.$e->getMessage());
             }
         }
         $series->save(); // Resim adları güncellendiyse tekrar kaydet

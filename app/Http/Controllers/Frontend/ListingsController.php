@@ -9,6 +9,7 @@ use App\Models\Persons;
 use App\Models\Collections;
 use App\Models\Watchlists;
 use App\Models\Settings;
+use Illuminate\Support\Facades\Cache;
 
 use Response;
 use Auth;
@@ -17,86 +18,93 @@ use Trackers;
 
 class ListingsController extends Controller{
 
+    private function getCacheKey(Request $request, $prefix)
+    {
+        // İstek parametrelerinden bir karma oluşturarak önbellek anahtarı üret
+        $queryParams = $request->all();
+        ksort($queryParams); // Parametre sırasının önemli olmaması için sırala
+        return $prefix . md5(http_build_query($queryParams));
+    }
+
     public function movies(Request $request){
         Trackers::track_agent();
-        $settings = Settings::findOrFail('1');
-        $site_items_per_page = $settings->site_items_per_page;
+        $site_items_per_page = config('app.site_items_per_page', 12);
 
-        if(!empty( $request->except('_token') ) ){
-            $items = Items::query();
+        $cacheKey = $this->getCacheKey($request, 'movies_listing_');
 
-            if(isset($request->rating)){
-                $rating = $request->rating;
-                $items->where('rating', '>=', $rating);
-            }
+        $movies = Cache::remember($cacheKey, now()->addMinutes(15), function () use ($request, $site_items_per_page) {
+            $itemsQuery = Items::with(['genres', 'platform']);
 
-            if(isset($request->duration_min)){
-                $duration_min = $request->duration_min;
-                $items->where('duration', '>=', $duration_min);
-            }
+            if(!empty( $request->except(['_token', 'page']) ) ){
 
-            if(isset($request->duration_max)){
-                $duration_max = $request->duration_max;
-                $items->where('duration', '<=', $duration_max);
-            }
-
-            if(isset($request->genres)){
-                $items->whereHas('genres', function($query) use($request) {
-                    $query->whereIn('name', [$request->genres]);
-                });
-            }
-
-            if(isset($request->quality)){
-                $items->whereHas('qualities', function($query) use($request) {
-                    $query->whereIn('name', [$request->quality]);
-                });
-            }
-
-            if(isset($request->countries)){
-                $items->whereHas('countries', function($query) use($request) {
-                    $query->whereIn('code', [$request->countries]);
-                });
-            }
-
-            if(isset($request->year)){
-                $items->whereHas('years', function($query) use($request) {
-                    $query->whereIn('name', [$request->year]);
-                });
-            }
-
-            if(isset($request->sorting)){
-
-                if($request->sorting == 'ASC'){
-                    $items->orderBy('created_at', 'ASC');
-                }else if($request->sorting == 'DESC'){
-                    $items->orderBy('created_at', 'DESC');
-                }else if($request->sorting == 'ASC-1'){
-                    $items->orderBy('id', 'ASC');
-                }else if($request->sorting == 'DESC-1'){
-                    $items->orderBy('id', 'DESC');
-                }else if($request->sorting == 'views'){
-                    $items->orderBy('views', 'DESC');
-                }else if($request->sorting == 'release'){
-                    $items->orderBy('release_date', 'DESC');
-                }else if($request->sorting == 'rating'){
-                    $items->orderBy('rating', 'DESC');
+                if(isset($request->rating)){
+                    $itemsQuery->where('rating', '>=', $request->rating);
                 }
 
-            }
+                if(isset($request->duration_min)){
+                    $itemsQuery->where('duration', '>=', $request->duration_min);
+                }
 
-            $movies = $items->orderBy('id', 'DESC')->where('type', 'movies')->where('visible', 1)->paginate($site_items_per_page)->onEachSide(1);
-        }else{
-            $movies = Items::orderBy('id','DESC')->where('visible', 1)->where('type', 'movies')->paginate($site_items_per_page)->onEachSide(1);
-        }
+                if(isset($request->duration_max)){
+                    $itemsQuery->where('duration', '<=', $request->duration_max);
+                }
+
+                if(isset($request->genres)){
+                    $itemsQuery->whereHas('genres', function($query) use($request) {
+                        $query->whereIn('name', is_array($request->genres) ? $request->genres : [$request->genres]);
+                    });
+                }
+
+                if(isset($request->quality)){
+                    $itemsQuery->whereHas('qualities', function($query) use($request) {
+                        $query->whereIn('name', is_array($request->quality) ? $request->quality : [$request->quality]);
+                    });
+                }
+
+                if(isset($request->countries)){
+                    $itemsQuery->whereHas('countries', function($query) use($request) {
+                        $query->whereIn('code', is_array($request->countries) ? $request->countries : [$request->countries]);
+                    });
+                }
+
+                if(isset($request->year)){
+                    $itemsQuery->whereHas('years', function($query) use($request) {
+                        $query->whereIn('name', is_array($request->year) ? $request->year : [$request->year]);
+                    });
+                }
+
+                if(isset($request->sorting)){
+                    if($request->sorting == 'ASC'){
+                        $itemsQuery->orderBy('created_at', 'ASC');
+                    }else if($request->sorting == 'DESC'){
+                        $itemsQuery->orderBy('created_at', 'DESC');
+                    }else if($request->sorting == 'ASC-1'){
+                        $itemsQuery->orderBy('id', 'ASC');
+                    }else if($request->sorting == 'DESC-1'){
+                        $itemsQuery->orderBy('id', 'DESC');
+                    }else if($request->sorting == 'views'){
+                        $itemsQuery->orderBy('views', 'DESC');
+                    }else if($request->sorting == 'release'){
+                        $itemsQuery->orderBy('release_date', 'DESC');
+                    }else if($request->sorting == 'rating'){
+                        $itemsQuery->orderBy('rating', 'DESC');
+                    }
+                } else {
+                    $itemsQuery->orderBy('id', 'DESC');
+                }
+                return $itemsQuery->where('type', 'movies')->where('visible', 1)->paginate($site_items_per_page)->onEachSide(1);
+            } else {
+                return Items::with(['genres', 'platform'])->orderBy('id','DESC')->where('visible', 1)->where('type', 'movies')->paginate($site_items_per_page)->onEachSide(1);
+            }
+        });
 		return view('frontend.movies-lists', compact('movies'));
 	}
 
     public function search(Request $request){
         Trackers::track_agent();
-        $itemsQuery = Items::query();
+        $itemsQuery = Items::with(['genres', 'platform']);
 
-        $settings = Settings::findOrFail('1');
-    	$site_items_per_page = $settings->site_items_per_page;
+        $site_items_per_page = config('app.site_items_per_page', 12);
 
         if(isset($request->keywords)){
             $name = $request->keywords;
@@ -162,69 +170,79 @@ class ListingsController extends Controller{
 
         $data = $itemsQuery->orderBy('id', 'DESC')->where('visible', 1)->paginate($site_items_per_page)->onEachSide(1);
 
+        // Arama sonuçlarını da önbelleğe alabiliriz.
+        // Önbellek anahtarı request parametrelerini içermeli (keywords, filtreler, sayfa no)
+        $cacheKey = $this->getCacheKey($request, 'search_listing_');
+        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($itemsQuery, $site_items_per_page) {
+            return $itemsQuery->where('visible', 1)->paginate($site_items_per_page)->onEachSide(1);
+        });
+
         return view('frontend.search-lists', compact('data'));
     }
 
     public function series(Request $request){
         Trackers::track_agent();
-        $settings = Settings::findOrFail('1');
-    	$site_items_per_page = $settings->site_items_per_page;
+        $site_items_per_page = config('app.site_items_per_page', 12);
 
-        if(!empty( $request->except('_token') ) ){
-            $items = Items::query();
-            if(isset($request->rating)){
-                $rating = $request->rating;
-                $items->where('rating', '>=', $rating);
-            }
-            if(isset($request->duration_min)){
-                $duration_min = $request->duration_min;
-                $items->where('duration', '>=', $duration_min);
-            }
-            if(isset($request->duration_max)){
-                $duration_max = $request->duration_max;
-                $items->where('duration', '<=', $duration_max);
-            }
-            if(isset($request->genres)){
-                $items->whereHas('genres', function($query) use($request) {
-                    $query->whereIn('name', [$request->genres]);
-                });
-            }
-            if(isset($request->quality)){
-                $items->whereHas('qualities', function($query) use($request) {
-                    $query->whereIn('name', [$request->quality]);
-                });
-            }
-            if(isset($request->countries)){
-                $items->whereHas('countries', function($query) use($request) {
-                    $query->whereIn('code', [$request->countries]);
-                });
-            }
-            if(isset($request->year)){
-                $items->whereHas('years', function($query) use($request) {
-                    $query->whereIn('name', [$request->year]);
-                });
-            }
-            if(isset($request->sorting)){
-                if($request->sorting == 'ASC'){
-                    $items->orderBy('created_at', 'ASC');
-                }else if($request->sorting == 'DESC'){
-                    $items->orderBy('created_at', 'DESC');
-                }else if($request->sorting == 'ASC-1'){
-                    $items->orderBy('id', 'ASC');
-                }else if($request->sorting == 'DESC-1'){
-                    $items->orderBy('id', 'DESC');
-                }else if($request->sorting == 'views'){
-                    $items->orderBy('views', 'DESC');
-                }else if($request->sorting == 'release'){
-                    $items->orderBy('release_date', 'DESC');
-                }else if($request->sorting == 'rating'){
-                    $items->orderBy('rating', 'DESC');
+        $cacheKey = $this->getCacheKey($request, 'series_listing_');
+
+        $series = Cache::remember($cacheKey, now()->addMinutes(15), function () use ($request, $site_items_per_page) {
+            $itemsQuery = Items::with(['genres', 'platform']);
+
+            if(!empty( $request->except(['_token', 'page']) ) ){
+                if(isset($request->rating)){
+                    $itemsQuery->where('rating', '>=', $request->rating);
                 }
+                if(isset($request->duration_min)){
+                    $itemsQuery->where('duration', '>=', $request->duration_min);
+                }
+                if(isset($request->duration_max)){
+                    $itemsQuery->where('duration', '<=', $request->duration_max);
+                }
+                if(isset($request->genres)){
+                    $itemsQuery->whereHas('genres', function($query) use($request) {
+                        $query->whereIn('name', is_array($request->genres) ? $request->genres : [$request->genres]);
+                    });
+                }
+                if(isset($request->quality)){
+                    $itemsQuery->whereHas('qualities', function($query) use($request) {
+                        $query->whereIn('name', is_array($request->quality) ? $request->quality : [$request->quality]);
+                    });
+                }
+                if(isset($request->countries)){
+                    $itemsQuery->whereHas('countries', function($query) use($request) {
+                        $query->whereIn('code', is_array($request->countries) ? $request->countries : [$request->countries]);
+                    });
+                }
+                if(isset($request->year)){
+                    $itemsQuery->whereHas('years', function($query) use($request) {
+                        $query->whereIn('name', is_array($request->year) ? $request->year : [$request->year]);
+                    });
+                }
+                if(isset($request->sorting)){
+                    if($request->sorting == 'ASC'){
+                        $itemsQuery->orderBy('created_at', 'ASC');
+                    }else if($request->sorting == 'DESC'){
+                        $itemsQuery->orderBy('created_at', 'DESC');
+                    }else if($request->sorting == 'ASC-1'){
+                        $itemsQuery->orderBy('id', 'ASC');
+                    }else if($request->sorting == 'DESC-1'){
+                        $itemsQuery->orderBy('id', 'DESC');
+                    }else if($request->sorting == 'views'){
+                        $itemsQuery->orderBy('views', 'DESC');
+                    }else if($request->sorting == 'release'){
+                        $itemsQuery->orderBy('release_date', 'DESC');
+                    }else if($request->sorting == 'rating'){
+                        $itemsQuery->orderBy('rating', 'DESC');
+                    }
+                } else {
+                    $itemsQuery->orderBy('id', 'DESC');
+                }
+                return $itemsQuery->where('type', 'series')->where('visible', 1)->paginate($site_items_per_page)->onEachSide(1);
+            } else {
+                return Items::with(['genres', 'platform'])->orderBy('id','DESC')->where('visible', 1)->where('type', 'series')->paginate($site_items_per_page)->onEachSide(1);
             }
-            $series = $items->orderBy('id', 'DESC')->where('type', 'series')->where('visible', 1)->paginate($site_items_per_page)->onEachSide(1);
-        }else{
-            $series = Items::orderBy('id','DESC')->where('visible', 1)->where('type', 'series')->paginate($site_items_per_page)->onEachSide(1);
-        }
+        });
 		return view('frontend.series-lists', compact('series'));
 	}
 

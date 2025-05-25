@@ -6,171 +6,6 @@
 
 <div class="container mx-auto bg-gray-900 flex">
     <div class="w-full">
-        {{-- Feature Movies --}}
-        @if(count($featureItems) >= 1)
-            <section class="flex flex-col mt-5 px-6">
-                <div id="top-carousel">
-                    <div class="ui text menu m-0 flex justify-between items-center pb-4 text-yellow-400">
-                        <div class="flex items-center space-x-1 ">
-                            <span class="iconify" data-icon="ic:baseline-splitscreen" data-inline="false"></span> <a class="item text-xl font-medium">{{ __('Featured') }}</a>
-                        </div>
-                        <div class="right menu flex space-x-2 items-center">
-                            <span class="item mr-1 cursor-pointer"><span class="iconify" data-icon="bx:bxs-left-arrow" data-inline="false"></span></span>
-                            <span class="item mr-2 cursor-pointer"><span class="iconify" data-icon="bx:bxs-right-arrow" data-inline="false"></span></span>
-                        </div>
-                    </div>
-                    <div class="carousel-items">
-                        @foreach($featureItems as $feature)
-                            @if($feature->type == 'movies')
-                                <div class="relative w-full">
-                                    <div class="slide w-full">
-                                        <div class="card-wrapper w-full">
-                                            <a href="/movie/{{ $feature->slug }}" title="{{ $feature->title }}" >
-                                                <div class="card inline-top loaded portrait-card rounded-lg">
-                                                    <div class="card-content-wrap">
-                                                        <div class="card-image-content">
-                                                            <div class="image-card base-card-image">
-                                                                @if ($loop->first)
-                                                                <img fetchpriority="high" alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/movies/poster/{{ $feature->poster }}">
-                                                                @else
-                                                                <img loading="lazy" alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/movies/poster/{{ $feature->poster }}">
-                                                                @endif
-                                                            </div>
-                                                            <div>
-                                                                <div class="card-overlay show-icon">
-                                                                    <div class="absolute left-0 top-0 px-2 py-1 bg-gray-900 text-yellow-400 z-50 ml-1 mt-1 uppercase text-xs flex items-center space-x-1 rounded"><span class="iconify" data-icon="bx:bx-medal" data-inline="false"></span><span>{{ __('Featured') }}</span></div>
-                                                                    <span class="absolute left-0 bottom-0 px-2 py-1 bg-gray-900 text-yellow-400 z-50 ml-1 mb-1 uppercase text-xs">{{ __('Movies') }}</span>
-                                                                    <div class="absolute right-0 top-0 px-2 py-1 bg-gray-900 text-yellow-400 z-50 mr-1 mt-1 uppercase text-xs flex items-center">
-                                                                        <span class="iconify mr-1" data-icon="akar-icons:star" data-inline="false"></span>{{ $feature->rating }}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card-details text-white w-40" style="overflow: hidden;text-overflow: ellipsis;">
-                                                            <h3 class="text-overflow card-header">{{ $feature->title }}</h3>
-                                                            <div class="text-overflow card-subheader">
-                                                                @foreach ($feature->genres as $singleGenre)
-                                                                    {{ $loop->first ? '' : ', ' }}
-                                                                    {{ $singleGenre->name }}
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @else
-                                <div class="relative w-full">
-                                    <div class="slide w-full">
-                                        <div class="card-wrapper w-full">
-                                            <a href="/series/{{ $feature->slug }}" title="{{ $feature->title }}" >
-                                                <div class="card inline-top loaded portrait-card rounded-lg">
-                                                    <div class="card-content-wrap">
-                                                        <div class="card-image-content">
-                                                            <div class="image-card base-card-image">
-                                                                @if ($loop->first)
-                                                                <img fetchpriority="high" alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/series/poster/{{ $feature->poster }}">
-                                                                @else
-                                                                <img loading="lazy" alt="{{ $feature->title }}" title="{{ $feature->title }}" class="original-image" src="/assets/series/poster/{{ $feature->poster }}">
-                                                                @endif
-                                                            </div>
-                                                            <div>
-                                                                <div class="card-overlay show-icon">
-                                                                    <div class="absolute left-0 top-0 px-2 py-1 bg-gray-900 text-yellow-400 z-50 ml-1 mt-1 uppercase text-xs flex items-center space-x-1 rounded"><span class="iconify" data-icon="bx:bx-medal" data-inline="false"></span><span>{{ __('Featured') }}</span></div>
-                                                                    <span class="absolute left-0 bottom-0 px-2 py-1 bg-gray-900 text-yellow-400 z-50 ml-1 mb-1 uppercase text-xs">{{ __('Series') }}</span>
-                                                                    <div class="absolute right-0 top-0 px-2 py-1 bg-gray-900 text-yellow-400 z-50 mr-1 mt-1 uppercase text-xs flex items-center">
-                                                                        <span class="iconify mr-1" data-icon="akar-icons:star" data-inline="false"></span>{{ $feature->rating }}
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card-details text-white w-40" style="overflow: hidden;text-overflow: ellipsis;">
-                                                            <h3 class="text-overflow card-header">{{ $feature->title }}</h3>
-                                                            <div class="text-overflow card-subheader">
-                                                                @foreach ($feature->genres as $singleGenre)
-                                                                    {{ $loop->first ? '' : ', ' }}
-                                                                    {{ $singleGenre->name }}
-                                                                @endforeach
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-                <div class="ui hidden divider"></div>
-                <script>
-                    $(function() {
-                        $('#top-carousel .carousel-items').slick({
-                            infinite: true,
-                            slidesToScroll: 7,
-                            slidesToShow: 7,
-                            dots: false,
-                            arrows: false,
-                            responsive: [
-                            {
-                                breakpoint: 1900,
-                                settings: {
-                                    slidesToShow: 6,
-                                    slidesToScroll: 6
-                                }
-                            },
-                            {
-                                breakpoint: 1500,
-                                settings: {
-                                    slidesToShow: 5,
-                                    slidesToScroll: 5
-                                }
-                            },
-                            {
-                                breakpoint: 1100,
-                                settings: {
-                                    slidesToShow: 4,
-                                    slidesToScroll: 4
-                                }
-                            },
-                            {
-                                breakpoint: 1000,
-                                settings: {
-                                    slidesToShow: 3,
-                                    slidesToScroll: 3
-                                }
-                            },
-                            {
-                                breakpoint: 600,
-                                settings: {
-                                    slidesToShow: 2,
-                                    slidesToScroll: 2
-                                }
-                            },
-                            {
-                                breakpoint: 400,
-                                settings: {
-                                    slidesToShow: 1,
-                                    slidesToScroll: 1
-                                }
-                            }]
-                        });
-
-                        $('#top-carousel .menu span:first').on('click', function() {
-                            $('#top-carousel .carousel-items').slick('slickPrev');
-                        });
-
-                        $('#top-carousel .menu span:last').on('click', function() {
-                            $('#top-carousel .carousel-items').slick('slickNext');
-                        });
-                    })
-                </script>
-            </section>
-        @endif
-
         {{-- Trending Section --}}
         <section class="flex flex-col mt-5 px-6 bg-gray-900">
             <div id="top-episodes" class="my-4">
@@ -187,18 +22,28 @@
                     <div class="episodes-items">
                         @foreach($hometrendings as $item)
                             <div class="relative w-full">
-                                <div class="slide w-full">
+                                <div class="slide w-full" style="min-height: 300px;">
                                     <div class="card-wrapper w-full">
                                         <a href="/{{ $item->type == 'movies' ? 'movie' : 'series' }}/{{ $item->slug }}" title="{{ $item->title }}" >
                                             <div class="card inline-top loaded portrait-card rounded-lg">
                                                 <div class="card-content-wrap" style="position: relative;">
                                                     <div class="card-image-content">
                                                         <div class="image-card base-card-image">
-                                                            @if ($loop->first)
-                                                            <img fetchpriority="high" alt="{{ $item->title }}" title="{{ $item->title }}" class="original-image" src="/assets/{{ $item->type == 'movies' ? 'movies' : 'series' }}/poster/{{ $item->poster }}">
-                                                            @else
-                                                            <img loading="lazy" alt="{{ $item->title }}" title="{{ $item->title }}" class="original-image" src="/assets/{{ $item->type == 'movies' ? 'movies' : 'series' }}/poster/{{ $item->poster }}">
-                                                            @endif
+                                                            @php
+                                                                $trendingPosterPath = $item->poster;
+                                                                $trendingWebpPath = Str::replaceLast(pathinfo($trendingPosterPath, PATHINFO_EXTENSION), 'webp', $trendingPosterPath);
+                                                            @endphp
+                                                            <picture>
+                                                                @if (Storage::disk('public')->exists($trendingWebpPath))
+                                                                    <source srcset="{{ Storage::url($trendingWebpPath) }}" type="image/webp">
+                                                                @endif
+                                                                @if (Storage::disk('public')->exists($trendingPosterPath))
+                                                                    <source srcset="{{ Storage::url($trendingPosterPath) }}" type="image/{{ pathinfo($trendingPosterPath, PATHINFO_EXTENSION) }}">
+                                                                    <img {{ $loop->first ? 'fetchpriority=high' : 'loading=lazy' }} alt="{{ $item->title }}" title="{{ $item->title }}" class="original-image" src="{{ Storage::url($trendingPosterPath) }}">
+                                                                @else
+                                                                    <img src="{{ asset('assets/frontend/images/default_poster.jpg') }}" alt="{{ $item->title }}" class="image_slider_img original-image" loading="lazy">
+                                                                @endif
+                                                            </picture>
                                                         </div>
                                                         <div>
                                                             <div class="card-overlay show-icon">
@@ -239,14 +84,14 @@
                 #top-episodes .episodes-items .slick-center {
                     opacity: 1;
                     transform: scale(1.05); /* Enlarge the centered item slightly more */
-                    z-index: 10; 
+                    z-index: 10;
                 }
 
                 #top-episodes .episodes-items .slick-center .portrait-card {
-                    box-shadow: 0 0 25px 8px rgba(250, 204, 21, 0.45); 
-                    transition: box-shadow 0.4s ease-in-out; 
+                    box-shadow: 0 0 25px 8px rgba(250, 204, 21, 0.45);
+                    transition: box-shadow 0.4s ease-in-out;
                 }
-                
+
                 /* Card Details Styling */
                 .card-details-bottom {
                     position: absolute;
@@ -255,15 +100,15 @@
                     right: 0;
                     padding: 0.75rem;
                     background-image: linear-gradient(to top, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 100%);
-                    max-height: 50%; 
+                    max-height: 50%;
                     overflow: hidden;
-                    border-bottom-left-radius: 0.25rem; 
+                    border-bottom-left-radius: 0.25rem;
                     border-bottom-right-radius: 0.25rem;
                 }
 
                 .card-details-bottom .card-header {
-                    font-size: 0.9rem; 
-                    font-weight: 600; 
+                    font-size: 0.9rem;
+                    font-weight: 600;
                     margin-bottom: 0.35rem;
                     white-space: nowrap;
                     overflow: hidden;
@@ -280,40 +125,40 @@
                 .genre-pill {
                     display: inline-block;
                     padding: 0.15rem 0.45rem;
-                    font-size: 0.65rem; 
-                    color: #1a202c; 
-                    background-color: #facc15; 
+                    font-size: 0.65rem;
+                    color: #1a202c;
+                    background-color: #facc15;
                     border-radius: 0.25rem;
                     line-height: 1.2;
                     font-weight: 500;
                 }
-                
+
                 /* Styling for Carousel Arrows (within the header) */
                 #top-episodes .left span.item,
                 #top-episodes .right span.item {
-                    background-color: rgba(40, 40, 40, 0.7); 
+                    background-color: rgba(40, 40, 40, 0.7);
                     border-radius: 50%;
-                    padding: 8px; 
-                    display: inline-flex; 
+                    padding: 8px;
+                    display: inline-flex;
                     align-items: center;
                     justify-content: center;
                     transition: background-color 0.3s ease, transform 0.3s ease;
-                    color: #fff; 
+                    color: #fff;
                 }
 
                 #top-episodes .left span.item:hover,
                 #top-episodes .right span.item:hover {
-                    background-color: rgba(250, 204, 21, 0.8); 
-                    transform: scale(1.1); 
+                    background-color: rgba(250, 204, 21, 0.8);
+                    transform: scale(1.1);
                 }
 
                 #top-episodes .left span.item .iconify,
                 #top-episodes .right span.item .iconify {
-                    font-size: 20px; 
+                    font-size: 20px;
                 }
 
                 #top-episodes .flex.items-center.justify-between {
-                    margin-bottom: 1rem; 
+                    margin-bottom: 1rem;
                 }
             </style>
             <script>
@@ -333,7 +178,7 @@
                         {
                             breakpoint: 1900,
                             settings: {
-                                slidesToShow: 5, 
+                                slidesToShow: 5,
                                 slidesToScroll: 1,
                                 centerMode: true,
                                 centerPadding: '40px'
@@ -360,27 +205,27 @@
                         {
                             breakpoint: 1000,
                             settings: {
-                                slidesToShow: 1, 
+                                slidesToShow: 1,
                                 slidesToScroll: 1,
-                                centerMode: true, 
-                                centerPadding: '80px' 
+                                centerMode: true,
+                                centerPadding: '80px'
                             }
                         },
                         {
-                            breakpoint: 768, 
+                            breakpoint: 768,
                             settings: {
                                 slidesToShow: 1,
                                 slidesToScroll: 1,
                                 centerMode: true,
-                                centerPadding: '40px' 
+                                centerPadding: '40px'
                             }
                         },
                         {
-                            breakpoint: 600, 
+                            breakpoint: 600,
                             settings: {
                                 slidesToShow: 1,
                                 slidesToScroll: 1,
-                                centerMode: false, 
+                                centerMode: false,
                                 centerPadding: '0px'
                             }
                         }]
@@ -423,7 +268,21 @@
                                                     <div class="card-content-wrap" style="position: relative;">
                                                         <div class="card-image-content">
                                                             <div class="image-card base-card-image">
-                                                                <img loading="lazy" alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="/assets/movies/poster/{{ $latest->poster }}">
+                                                                @php
+                                                                    $latestMoviePosterPath = $latest->poster;
+                                                                    $latestMovieWebpPath = Str::replaceLast(pathinfo($latestMoviePosterPath, PATHINFO_EXTENSION), 'webp', $latestMoviePosterPath);
+                                                                @endphp
+                                                                <picture>
+                                                                    @if (Storage::disk('public')->exists($latestMovieWebpPath))
+                                                                        <source srcset="{{ Storage::url($latestMovieWebpPath) }}" type="image/webp">
+                                                                    @endif
+                                                                    @if (Storage::disk('public')->exists($latestMoviePosterPath))
+                                                                        <source srcset="{{ Storage::url($latestMoviePosterPath) }}" type="image/{{ pathinfo($latestMoviePosterPath, PATHINFO_EXTENSION) }}">
+                                                                        <img {{ $loop->first ? 'fetchpriority=high' : 'loading=lazy' }} alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="{{ Storage::url($latestMoviePosterPath) }}">
+                                                                    @else
+                                                                        <img src="{{ asset('assets/frontend/images/default_poster.jpg') }}" alt="{{ $latest->title }}" class="image_slider_img original-image" loading="lazy">
+                                                                    @endif
+                                                                </picture>
                                                             </div>
                                                             <div>
                                                                 <div class="card-overlay show-icon">
@@ -499,7 +358,21 @@
                                                 <div class="card-content-wrap" style="position: relative;">
                                                     <div class="card-image-content">
                                                         <div class="image-card base-card-image">
-                                                            <img loading="lazy" alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="/assets/series/poster/{{ $latest->poster }}">
+                                                            @php
+                                                                $latestSeriesPosterPath = $latest->poster;
+                                                                $latestSeriesWebpPath = Str::replaceLast(pathinfo($latestSeriesPosterPath, PATHINFO_EXTENSION), 'webp', $latestSeriesPosterPath);
+                                                            @endphp
+                                                            <picture>
+                                                                @if (Storage::disk('public')->exists($latestSeriesWebpPath))
+                                                                    <source srcset="{{ Storage::url($latestSeriesWebpPath) }}" type="image/webp">
+                                                                @endif
+                                                                @if (Storage::disk('public')->exists($latestSeriesPosterPath))
+                                                                    <source srcset="{{ Storage::url($latestSeriesPosterPath) }}" type="image/{{ pathinfo($latestSeriesPosterPath, PATHINFO_EXTENSION) }}">
+                                                                    <img {{ $loop->first ? 'fetchpriority=high' : 'loading=lazy' }} alt="{{ $latest->title }}" title="{{ $latest->title }}" class="original-image" src="{{ Storage::url($latestSeriesPosterPath) }}">
+                                                                @else
+                                                                    <img src="{{ asset('assets/frontend/images/default_poster.jpg') }}" alt="{{ $latest->title }}" class="image_slider_img original-image" loading="lazy">
+                                                                @endif
+                                                            </picture>
                                                         </div>
                                                         <div>
                                                             <div class="card-overlay show-icon">
@@ -558,13 +431,13 @@
                         <div class="flex items-center space-x-1">
                             <span class="iconify" data-icon="ic:baseline-splitscreen" data-inline="false"></span> <a class="item sm:text-xl text-sm font-medium">{{ __('Collections') }}</a>
                         </div>
-                        @if(count($collections) > 0)
+                        @if(isset($collections) && count($collections) > 0)
                         <div class="right menu flex space-x-2 items-center">
                             <span class="mr-1 cursor-pointer bg-gray-700 text-sm text-white px-2 py-1 rounded hover:bg-gray-800 hover:text-yellow-500 transition duration-200 ease-out cursor-pointer"><a href="/collections">{{ __('View All') }}</a></span>
                         </div>
                         @endif
                     </div>
-                    @if(count($collections) > 0)
+                    @if(isset($collections) && count($collections) > 0)
                     <div class="w-full grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
                         @foreach($collections as $collection)
                             <div class="relative px-2 mb-2">
@@ -582,9 +455,29 @@
                                                                         @break
                                                                     @endif
                                                                     @if($singleItems->type == 'movies')
-                                                                        <img loading="lazy" alt="{{ $singleItems->title }}" title="{{ $singleItems->title }}" class="block w-2/4" src="/assets/movies/poster/{{ $singleItems->poster }}">
+                                                                        @php
+                                                                            $posterPath = '/assets/movies/poster/' . $singleItems->poster;
+                                                                            $filename = pathinfo($posterPath, PATHINFO_FILENAME);
+                                                                            $dirname = pathinfo($posterPath, PATHINFO_DIRNAME);
+                                                                            $webpPath = $dirname . '/' . $filename . '.webp';
+                                                                        @endphp
+                                                                        <picture>
+                                                                            <source srcset="{{ asset($webpPath) }}" type="image/webp">
+                                                                            <source srcset="{{ asset($posterPath) }}" type="{{ Str::endsWith($posterPath, '.png') ? 'image/png' : (Str::endsWith($posterPath, ['.jpg', '.jpeg']) ? 'image/jpeg' : (Str::endsWith($posterPath, '.gif') ? 'image/gif' : '')) }}">
+                                                                            <img loading="lazy" alt="{{ $singleItems->title }}" title="{{ $singleItems->title }}" class="block w-2/4" src="{{ asset($posterPath) }}">
+                                                                        </picture>
                                                                     @else
-                                                                        <img loading="lazy" alt="{{ $singleItems->title }}" title="{{ $singleItems->title }}" class="block w-2/4" src="/assets/series/poster/{{ $singleItems->poster }}">
+                                                                        @php
+                                                                            $posterPath = '/assets/series/poster/' . $singleItems->poster;
+                                                                            $filename = pathinfo($posterPath, PATHINFO_FILENAME);
+                                                                            $dirname = pathinfo($posterPath, PATHINFO_DIRNAME);
+                                                                            $webpPath = $dirname . '/' . $filename . '.webp';
+                                                                        @endphp
+                                                                        <picture>
+                                                                            <source srcset="{{ asset($webpPath) }}" type="image/webp">
+                                                                            <source srcset="{{ asset($posterPath) }}" type="{{ Str::endsWith($posterPath, '.png') ? 'image/png' : (Str::endsWith($posterPath, ['.jpg', '.jpeg']) ? 'image/jpeg' : (Str::endsWith($posterPath, '.gif') ? 'image/gif' : '')) }}">
+                                                                            <img loading="lazy" alt="{{ $singleItems->title }}" title="{{ $singleItems->title }}" class="block w-2/4" src="{{ asset($posterPath) }}">
+                                                                        </picture>
                                                                     @endif
                                                                     @php $check++; @endphp
                                                                 @endforeach
@@ -616,13 +509,13 @@
                         <div class="flex items-center space-x-1">
                             <span class="iconify" data-icon="ic:baseline-groups" data-inline="false"></span> <a class="item sm:text-xl text-sm font-medium">{{ __('Popular Actors') }}</a>
                         </div>
-                        @if(count($persons) > 0)
+                        @if(isset($persons) && count($persons) > 0)
                         <div class="right menu flex space-x-2 items-center">
                             <span class="mr-1 cursor-pointer bg-gray-700 text-sm text-white px-2 py-1 rounded hover:bg-gray-800 hover:text-yellow-500 transition duration-200 ease-out cursor-pointer"><a href="/persons">{{ __('View All') }}</a></span>
                         </div>
                         @endif
                     </div>
-                    @if(count($persons) > 0)
+                    @if(isset($persons) && count($persons) > 0)
                     <div class="w-full grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
                         @foreach($persons as $person)
                             <div class="relative text-center actor-card">

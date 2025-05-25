@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\EpisodeLike;
 
 class Episodes extends Model
 {
@@ -22,6 +23,14 @@ class Episodes extends Model
 
     public function comments(){
     	return $this->belongsToMany('App\Models\Comments','comments_episodes','episodes_id','comments_id');
+    }
+
+    /**
+     * Get all of the likes for the Episode.
+     */
+    public function likes()
+    {
+        return $this->hasMany(EpisodeLike::class, 'episodes_id');
     }
 
 }

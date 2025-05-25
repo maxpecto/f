@@ -60,7 +60,21 @@
                             </div>
                             <div class="p-1 sm:flex hidden">
                                 <div class="w-20 h-full">
-                                    <img alt="{{ $recommended->title }}" title="{{ $recommended->title }}" class="" src="/assets/movies/poster/{{ $recommended->poster }}">
+                                    @php
+                                        $originalPath = $recommended->poster; // Veritabanında 'assets/movies/poster/film.jpg' gibi tam yol olduğunu varsayıyoruz
+                                        $webpPath = Str::replaceLast(pathinfo($originalPath, PATHINFO_EXTENSION), 'webp', $originalPath);
+                                    @endphp
+                                    <picture>
+                                        @if (Storage::disk('public')->exists($webpPath))
+                                            <source srcset="{{ Storage::url($webpPath) }}" type="image/webp">
+                                        @endif
+                                        @if (Storage::disk('public')->exists($originalPath))
+                                            <source srcset="{{ Storage::url($originalPath) }}" type="image/{{ pathinfo($originalPath, PATHINFO_EXTENSION) }}">
+                                            <img loading="lazy" alt="{{ $recommended->title }}" title="{{ $recommended->title }}" class="" src="{{ Storage::url($originalPath) }}">
+                                        @else
+                                            <img loading="lazy" alt="{{ $recommended->title }}" title="{{ $recommended->title }}" class="" src="{{ asset('assets/frontend/images/default_poster.jpg') }}">
+                                        @endif
+                                    </picture>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +100,22 @@
                             </div>
                             <div class="p-1 sm:flex hidden">
                                 <div class="w-20 h-full">
-                                    <img alt="{{ $recommended->title }}" title="{{ $recommended->title }}" class="" src="/assets/series/poster/{{ $recommended->poster }}">
+                                    @php
+                                        // Dizi için de aynı mantık, $recommended->poster zaten doğru yolu içermeli
+                                        $originalPath = $recommended->poster;
+                                        $webpPath = Str::replaceLast(pathinfo($originalPath, PATHINFO_EXTENSION), 'webp', $originalPath);
+                                    @endphp
+                                    <picture>
+                                        @if (Storage::disk('public')->exists($webpPath))
+                                            <source srcset="{{ Storage::url($webpPath) }}" type="image/webp">
+                                        @endif
+                                        @if (Storage::disk('public')->exists($originalPath))
+                                            <source srcset="{{ Storage::url($originalPath) }}" type="image/{{ pathinfo($originalPath, PATHINFO_EXTENSION) }}">
+                                            <img loading="lazy" alt="{{ $recommended->title }}" title="{{ $recommended->title }}" class="" src="{{ Storage::url($originalPath) }}">
+                                        @else
+                                            <img loading="lazy" alt="{{ $recommended->title }}" title="{{ $recommended->title }}" class="" src="{{ asset('assets/frontend/images/default_poster.jpg') }}">
+                                        @endif
+                                    </picture>
                                 </div>
                             </div>
                         </div>
@@ -138,7 +167,21 @@
                         </div>
                         <div class="p-1 sm:flex hidden">
                             <div class="w-20 h-full">
-                                <img alt="{{ $random->title }}" title="{{ $random->title }}" class="" src="/assets/movies/poster/{{ $random->poster }}">
+                                @php
+                                    $originalPath = $random->poster; // Veritabanında 'assets/movies/poster/film.jpg' gibi tam yol olduğunu varsayıyoruz
+                                    $webpPath = Str::replaceLast(pathinfo($originalPath, PATHINFO_EXTENSION), 'webp', $originalPath);
+                                @endphp
+                                <picture>
+                                    @if (Storage::disk('public')->exists($webpPath))
+                                        <source srcset="{{ Storage::url($webpPath) }}" type="image/webp">
+                                    @endif
+                                    @if (Storage::disk('public')->exists($originalPath))
+                                        <source srcset="{{ Storage::url($originalPath) }}" type="image/{{ pathinfo($originalPath, PATHINFO_EXTENSION) }}">
+                                        <img loading="lazy" alt="{{ $random->title }}" title="{{ $random->title }}" class="" src="{{ Storage::url($originalPath) }}">
+                                    @else
+                                        <img loading="lazy" alt="{{ $random->title }}" title="{{ $random->title }}" class="" src="{{ asset('assets/frontend/images/default_poster.jpg') }}">
+                                    @endif
+                                </picture>
                             </div>
                         </div>
                     </div>
@@ -164,7 +207,22 @@
                         </div>
                         <div class="p-1 sm:flex hidden">
                             <div class="w-20 h-full">
-                                <img alt="{{ $random->title }}" title="{{ $random->title }}" class="" src="/assets/series/poster/{{ $random->poster }}">
+                                @php
+                                    // Dizi için de aynı mantık, $random->poster zaten doğru yolu içermeli
+                                    $originalPath = $random->poster;
+                                    $webpPath = Str::replaceLast(pathinfo($originalPath, PATHINFO_EXTENSION), 'webp', $originalPath);
+                                @endphp
+                                <picture>
+                                    @if (Storage::disk('public')->exists($webpPath))
+                                        <source srcset="{{ Storage::url($webpPath) }}" type="image/webp">
+                                    @endif
+                                    @if (Storage::disk('public')->exists($originalPath))
+                                        <source srcset="{{ Storage::url($originalPath) }}" type="image/{{ pathinfo($originalPath, PATHINFO_EXTENSION) }}">
+                                        <img loading="lazy" alt="{{ $random->title }}" title="{{ $random->title }}" class="" src="{{ Storage::url($originalPath) }}">
+                                    @else
+                                        <img loading="lazy" alt="{{ $random->title }}" title="{{ $random->title }}" class="" src="{{ asset('assets/frontend/images/default_poster.jpg') }}">
+                                    @endif
+                                </picture>
                             </div>
                         </div>
                     </div>
