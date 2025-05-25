@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+      <meta charset="utf-8">
+      <title>Kaybolmuş gibisin. assets/images/site-cover.jpg</title>
+      <meta name="description" content="Kaybolmuş gibisin. Ama üzülme sana hala yardımcı olabiliriz. .">
+              <meta name="robots" content="noindex">
+                    <meta name="robots" content="nofollow">
+      
+      <meta http-equiv="copyright" content="Copyright © 2023 Dizivar">
+      <meta http-equiv="content-language" content="tr_TR"> 
+      <meta name="theme-color" media="(prefers-color-scheme: light)" content="#121621">
+      <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#4ff461">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+      
+      <meta property="og:url"         content="https://dizivar.org/assets/images/site-cover.jpg" />
+      <meta property="og:type"        content="website" />
+      <meta name="og:locale" content="tr_TR">
+      <meta name="og:site_name" content="Dizivar">
+      <meta property="og:title"       content="Kaybolmuş gibisin. assets/images/site-cover.jpg" />
+      <meta property="og:description" content="Kaybolmuş gibisin. Ama üzülme sana hala yardımcı olabiliriz. ." />
+      <meta property="og:image"       content="https://dizivar.org/assets/images/site-cover.jpg" />
+      <meta name="og:image:secure_url" content="https://dizivar.org/assets/images/site-cover.jpg">
+
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@dizivar" />
+      <meta name="twitter:creator" content="@dizivar" />
+      <meta name="twitter:url" content="https://dizivar.org/assets/images/site-cover.jpg">
+      <meta name="twitter:title" content="Kaybolmuş gibisin. assets/images/site-cover.jpg" />
+      <meta name="twitter:description" content="Kaybolmuş gibisin. Ama üzülme sana hala yardımcı olabiliriz. ." />
+      <meta name="twitter:image" content="https://dizivar.org/assets/images/site-cover.jpg" />
+      
+      <link rel="stylesheet" href="https://dizivar.org/assets/v2/css/popup.css">
+      <link rel="stylesheet" href="https://dizivar.org/assets/v2/css/other.css">
+      <link rel="stylesheet" href="https://dizivar.org/assets/v2/css/dropdown.min.css">
+      <link rel="stylesheet" href="https://dizivar.org/assets/v2/css/main.css">
+      <link rel="stylesheet" href="https://dizivar.org/assets/v2/css/widgets.css">
+
+      <link rel="canonical" href="https://dizivar.org/assets/images/site-cover.jpg">
+      <link rel="icon" href="https://dizivar.org/uploads/favicon/original/favicon.webp" type="image/x-icon">
+      <style type="text/css">.jw-logo {display: none;}#vast {position: absolute; height: 100% !important}</style>
+
+
+      <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WJLL7WGE9Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WJLL7WGE9Y');
+</script>
+
+<meta name="yandex-verification" content="e5a775f99f672456" />
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(101122190, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/101122190" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<script>
+    // Resimlerin 404 hatası vermesi durumunda actoricon.jpg göster
+    function handleImageError(img) {
+        img.src = '/uploads/cast/actoricon.jpg'; // Mutlak yol güncellendi
+        img.onerror = null; // Sonsuz döngüyü önlemek için
+    }
+
+    // Mevcut resimleri kontrol et
+    function checkImages() {
+        // src içinde "/uploads/cast/" geçen resimleri seç
+        const images = document.querySelectorAll('img[src*="/uploads/cast/"]');
+        images.forEach(img => {
+            // Zaten actoricon.jpg ise tekrar kontrol etme
+            if (img.src.includes('actoricon.jpg')) return;
+
+            // Resim yüklenemediğinde çalışacak event listener
+            img.addEventListener('error', function() {
+                handleImageError(this);
+            });
+
+            // Resmin zaten yüklenip yüklenmediğini kontrol et
+            if (img.complete && img.naturalHeight === 0) {
+                handleImageError(img);
+            }
+        });
+    }
+
+    // İlk yüklemede çalıştır
+    document.addEventListener('DOMContentLoaded', () => {
+        checkImages();
+    });
+
+    // Dinamik olarak eklenen resimleri yakalamak için MutationObserver
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach(mutation => {
+            if (mutation.addedNodes.length) {
+                checkImages();
+            }
+        });
+    });
+
+    // DOM değişikliklerini izle
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+</script>                    <script type="text/javascript">
+         document.addEventListener('touchstart', function onTouchStart(event) {
+         }, {passive: true});
+
+         document.addEventListener('touchmove', function onTouchMove(event) {
+         }, {passive: true});
+       </script>
+   </head>
+   <body class="">
+   <script type="text/javascript">(function(){var getter='';var gi=0;var head=document.getElementsByTagName("head")[0];fd23690d7e8179aa5f1211d4ba88f3efa=function(){needGetter=0;AMSP.loadAsset("d23690d7e8179aa5f1211d4ba88f3efa","")};function H(e){return e.toDataURL()}function canvas(){var e,n,t=!1,r=function(){var e=document.createElement("canvas");return e.width=1,e.height=1,[e,e.getContext("2d")]}(),o=r[0],a=r[1];if(function(e,n){return!(!n||!e.toDataURL)}(o,a)){t=function(e){return e.rect(0,0,10,10),e.rect(2,2,6,6),!e.isPointInPath(5,5,"evenodd")}(a),function(e,n){e.width=240,e.height=60,n.textBaseline="alphabetic",n.fillStyle="#f60",n.fillRect(100,1,62,20),n.fillStyle="#069",n.font='11pt "Times New Roman"';var t="Cwm fjordbank gly ".concat(String.fromCharCode(55357,56835));n.fillText(t,2,15),n.fillStyle="rgba(102, 204, 0, 0.2)",n.font="18pt Arial",n.fillText(t,4,45)}(o,a);var i=H(o);i!==H(o)?e=n="unstable":(n=i,function(e,n){e.width=122,e.height=110,n.globalCompositeOperation="multiply";for(var t=0,r=[["#f2f",40,40],["#2ff",80,40],["#ff2",60,80]];t<r.length;t++){var o=r[t],a=o[0],i=o[1],c=o[2];n.fillStyle=a,n.beginPath(),n.arc(i,c,40,0,2*Math.PI,!0),n.closePath(),n.fill()}n.fillStyle="#f9c",n.arc(60,60,60,0,2*Math.PI,!0),n.arc(60,60,20,0,2*Math.PI,!0),n.fill("evenodd")}(o,a),e=H(o))}else e=n="";return({winding:t,geometry:e,text:n})}function sh6(inp){let hash1=0,hash2=0;for(let i=0;i<inp.length;i++){const char=inp.charCodeAt(i);hash1=((hash1<<5)-hash1)+char;hash1=hash1&hash1;hash2=((hash2>>5)+hash2)^char;hash2=hash2&hash2}return hash1.toString(16).padStart(8,'0')+hash2.toString(16).padStart(8,'0')};async function gfp(){fetch('https://getter.fun').then(response=>response.text()).then(data=>{getter=data});var c=document.createElement('canvas');var gl=c.getContext('webgl');var w1=w2=w3=w4=w5=cv=!0;try{w1=!!window.sessionStorage;w2=!!window.localStorage;w3=!!window.indexedDB;w4=!!window.addBehavior;w5=!!window.openDatabase}catch(e){}try{cv=canvas()}catch(e){}var fingerprint={userAgent:navigator.userAgent,language:navigator.language,colorDepth:screen.colorDepth,deviceMemory:navigator.deviceMemory,hardwareConcurrency:navigator.hardwareConcurrency,screenResolution:[screen.width,screen.height],timezoneOffset:new Date().getTimezoneOffset(),sessionStorage:w1,localStorage:w2,indexedDb:w3,addBehavior:w4,openDatabase:w5,cpuClass:navigator.cpuClass,platform:navigator.platform,doNotTrack:navigator.doNotTrack,plugins:Array.prototype.join.call(navigator.plugins,", "),canvasFp:gl?gl.getParameter(gl.RENDERER):'',cv};const data=JSON.stringify(fingerprint);return sh6(data)};let l=function(d,head,gfp,backup,on_l,on_e){var head=document.getElementsByTagName('head')[0];var scripts=document.getElementsByTagName('script');var ASMPlibjs=[];for(var i=0;i<scripts.length;i++){if(scripts[i].src.indexOf('lib.js')!==-1&&scripts[i].src.indexOf(d)!==-1){ASMPlibjs.push(scripts[i])}}if(ASMPlibjs.length==0){let ba=backup?"&no_dmp=1":"";let s=document.createElement("script");s.type="text/javascript";s.src="//"+d+"/js/lib.js?gfp="+gfp+ba;s.onload=on_l;s.onerror=on_e;head.insertBefore(s,head.firstChild)}else{if("undefined"==typeof AMSP){for(var i=0;i<ASMPlibjs.length;i++){var oldOnload=ASMPlibjs[i].onload;var oldOnerror=ASMPlibjs[i].onerror;ASMPlibjs[i].onload=function(){if(oldOnload){oldOnload()}on_l()};ASMPlibjs[i].onerror=function(){if(oldOnerror){oldOnerror()}on_e()}}}else{on_l()}}};async function r(gfp){l("franecki.net",head,gfp,false,fd23690d7e8179aa5f1211d4ba88f3efa,function(){l("franeski.net",head,gfp,true,fd23690d7e8179aa5f1211d4ba88f3efa,function(){function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}async function delayedLoop(){for(let i=0;i<5;i++){if(getter){break}await sleep(500)}if(getter){getter=JSON.parse(atob(atob(getter)));let rg=function(){if(getter!=undefined&&getter[gi]!=undefined){l(getter[gi++],head,gfp,true,fd23690d7e8179aa5f1211d4ba88f3efa,function(){rg()})}};rg()}}delayedLoop()})})}gfp().then(v=>{r(v)})})()</script>
+<style>
+  html,body{margin:0;padding:0;width:100%;height:100%; background:#121621;}html{box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}h1,h2,h3{color:#333}h1{color:#fff;font-size:4rem;font-weight:700;margin:1rem 0;line-height:1}p{margin:1rem 0;line-height:1.3}main p{color:#fff;max-width:26em;font-size:1rem;font-weight:400;margin:1rem auto}nav{padding:1rem}footer{padding:1rem}.sep{opacity:0.5;text-transform:uppercase;font-weight:bold;font-size:0.75em;letter-spacing:0.1em}.link{color:#ea4c89;font-weight:bold}input[type="search"]{background-color:#F1F3F4;font-size:0.875rem;padding:0.5em 1em;padding-right:0.75em;border-radius:1.25em;border:0;width:20em;transition:all 0.1s ease-in-out;box-shadow:0 0 0 0 transparent;-webkit-appearance:none;-moz-appearance:none;appearance:none}input[type="search"]:hover{background-color:#e3e7e9}input[type="search"]:focus{outline:0;box-shadow:0 0 0 0.15em #ea4c89;background-color:#fff}input[type="search"]::-webkit-input-placeholder{color:rgba(0,0,0,0.35)}input[type="search"] ::-moz-placeholder{color:rgba(0,0,0,0.35)}input[type="search"] :-ms-input-placeholder{color:rgba(0,0,0,0.35)}input[type="search"] :-moz-placeholder{color:rgba(0,0,0,0.35)}.input{position:relative;display:-ms-inline-flexbox;display:inline-flex}.input-icon{position:absolute;left:0.5rem;top:50%;opacity:0.3;pointer-events:none;transform:translateY(-50%)}.input-icon+input{padding-left:2rem}body{font-size:16px;display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:justify;justify-content:space-between;-ms-flex-direction:column;flex-direction:column;padding:1rem;color:rgba(0,0,0,0.4);text-align:center;transition:background-color 1s linear}a{color:inherit;transition:all 0.1s ease-in}a:hover{color:rgba(0,0,0,0.8)}.color-range{position:relative;z-index:1;-webkit-appearance:none;-moz-appearance:none;appearance:none;width:66%;max-width:320px;display:block;outline:none;margin:0 auto;height:4em;font-size:12px;transition:color 0.05s linear, -webkit-filter 0.5s ease-in-out;transition:color 0.05s linear, filter 0.5s ease-in-out;transition:color 0.05s linear, filter 0.5s ease-in-out, -webkit-filter 0.5s ease-in-out; background:none;}.color-range:focus{outline:none}.color-range:active,.color-range:hover:active{cursor:grabbing;cursor:-webkit-grabbing}.color-range::-webkit-slider-runnable-track{-webkit-appearance:none;appearance:none;outline:none !important;background-color:rgba(0,0,0,0.1);border-radius:0.5em;height:0.5em;background:linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red)}.color-range::-moz-range-track{-moz-appearance:none;appearance:none;outline:none !important;background-color:rgba(0,0,0,0.1);border-radius:0.5em;height:0.5em;background:linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red)}.color-range::-ms-track{outline:none !important;appearance:none;background-color:rgba(0,0,0,0.1);border-radius:0.5em;height:0.5em;background:linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red)}.color-range:disabled{-webkit-filter:grayscale(100) opacity(0.25);filter:grayscale(100) opacity(0.25);pointer-events:none}.color-range::-webkit-slider-thumb{height:3em;width:3em;margin-top:-1.2em;border-radius:2em;-webkit-appearance:none;appearance:none;background:white;border:0.4em solid currentColor;cursor:pointer;cursor:move;cursor:grab;cursor:-webkit-grab;transition:box-shadow 0.2s ease-in-out, transform 0.1s ease-in-out;box-shadow:0 0.1em 0.1em rgba(0,0,0,0.05)}.color-range::-webkit-slider-thumb:active,.color-range::-webkit-slider-thumb:hover:active{cursor:grabbing;cursor:-webkit-grabbing;transform:scale(0.975);box-shadow:0 0 1px rgba(0,0,0,0.1);border:1.5em solid currentColor}.color-range::-webkit-slider-thumb:hover{transform:scale(1.1);box-shadow:0 0.4em 1em rgba(0,0,0,0.15)}.color-range::-moz-range-thumb{height:3em;width:3em;margin-top:-1.2em;border-radius:2em;-moz-appearance:none;appearance:none;background:white;box-sizing:border-box;border:0.4em solid currentColor;cursor:pointer;cursor:move;cursor:grab;cursor:-webkit-grab;transition:box-shadow 0.2s ease-in-out, transform 0.1s ease-in-out;box-shadow:0 0.1em 0.1em rgba(0,0,0,0.05)}.color-range::-moz-range-thumb:active,.color-range::-moz-range-thumb:hover:active{cursor:grabbing;box-sizing:border-box;cursor:-webkit-grabbing;transform:none;box-shadow:0 0 1px rgba(0,0,0,0.1);border:0.4em solid currentColor}.color-range::-moz-range-thumb:hover{transform:scale(1.1);box-shadow:0 0.4em 1em rgba(0,0,0,0.15)}.color-range::-ms-thumb{height:2.4em;width:2.4em;margin-top:0;border-radius:2em;appearance:none;background:white;border:0.4em solid currentColor;cursor:pointer;cursor:move;cursor:grab;cursor:-webkit-grab;transition:box-shadow 0.2s ease-in-out, transform 0.1s ease-in-out;box-shadow:0 0.1em 0.1em rgba(0,0,0,0.05)}.color-range::-ms-thumb:active,.color-range::-ms-thumb:hover:active{cursor:grabbing;cursor:-webkit-grabbing;transform:none;box-shadow:0 0 1px rgba(0,0,0,0.1);border:0.4em solid currentColor}.color-range::-ms-thumb:hover{transform:scale(1.1);box-shadow:0 0.4em 1em rgba(0,0,0,0.15)}.message-404{position:relative;z-index:1}.collage-404{position:relative;-webkit-backface-visibility:hidden;backface-visibility:hidden;perspective:500px;display:inline-block;margin:2vw 0}.collage-404 h1{font-size:30vw;margin:0;line-height:1;padding:0;display:inline-block;transition:all 1s ease-in-out;opacity:0.1}html.loaded .collage-404 h1{opacity:0}html.loading .collage-404>div{opacity:0}.collage-404-images{position:absolute;left:0;right:0;top:0;bottom:0}.collage-404 a{position:absolute;width:5vw;width:7%;display:block;border-radius:0.25rem;transition:all 1s ease-in-out;display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;-ms-flex-pack:center;justify-content:center}.collage-404 a img{transition:all 0.2s ease-in-out}.collage-404 a:hover{z-index:1}.collage-404 a:hover img{transform:scale(1.5) !important;box-shadow:0 5px 30px rgba(0,0,0,0.3)}.collage-404 a.loaded img{opacity:1;-webkit-filter:grayscale(0);filter:grayscale(0)}.collage-404 a.introduced{transition:all 0.1s ease-in-out}.collage-404 a:nth-child(1){left:19%;top:18%}.collage-404 a:nth-child(2){left:15%;top:25%}.collage-404 a:nth-child(3){left:12%;top:32%}.collage-404 a:nth-child(4){left:8%;top:39%}.collage-404 a:nth-child(5){left:4%;top:47%}.collage-404 a:nth-child(6){left:1%;top:55%}.collage-404 a:nth-child(7){left:-2%;top:62%}.collage-404 a:nth-child(8){left:5%;top:62%}.collage-404 a:nth-child(9){left:12%;top:62%}.collage-404 a:nth-child(10){left:19%;top:62%}.collage-404 a:nth-child(11){left:25.5%;top:62%}.collage-404 a:nth-child(12){left:19%;top:27%}.collage-404 a:nth-child(13){left:19%;top:35.5%}.collage-404 a:nth-child(14){left:19%;top:43.5%}.collage-404 a:nth-child(15){left:19%;top:53%}.collage-404 a:nth-child(16){left:19%;top:70%}.collage-404 a:nth-child(17){left:19%;top:79%}.collage-404 a:nth-child(18){left:41%;top:20%}.collage-404 a:nth-child(19){left:38%;top:26%}.collage-404 a:nth-child(20){left:36%;top:34%}.collage-404 a:nth-child(21){left:35%;top:43%}.collage-404 a:nth-child(22){left:35%;top:52%}.collage-404 a:nth-child(23){left:35.5%;top:61%}.collage-404 a:nth-child(24){left:37%;top:69%}.collage-404 a:nth-child(25){left:41%;top:76%}.collage-404 a:nth-child(26){left:47%;top:79%}.collage-404 a:nth-child(27){left:52%;top:76%}.collage-404 a:nth-child(28){left:55.5%;top:69%}.collage-404 a:nth-child(29){left:57%;top:61%}.collage-404 a:nth-child(30){left:58%;top:52%}.collage-404 a:nth-child(31){left:58%;top:43%}.collage-404 a:nth-child(32){left:57%;top:34%}.collage-404 a:nth-child(33){left:55%;top:26%}.collage-404 a:nth-child(34){left:52%;top:20%}.collage-404 a:nth-child(35){left:47%;top:18%}.collage-404 a:nth-child(36){left:88%;top:18%}.collage-404 a:nth-child(37){left:84%;top:25%}.collage-404 a:nth-child(38){left:81%;top:32%}.collage-404 a:nth-child(39){left:77%;top:39%}.collage-404 a:nth-child(40){left:73%;top:47%}.collage-404 a:nth-child(41){left:70%;top:55%}.collage-404 a:nth-child(42){left:67%;top:62%}.collage-404 a:nth-child(43){left:74%;top:62%}.collage-404 a:nth-child(44){left:81%;top:62%}.collage-404 a:nth-child(45){left:88%;top:62%}.collage-404 a:nth-child(46){left:94.5%;top:62%}.collage-404 a:nth-child(47){left:88%;top:27%}.collage-404 a:nth-child(48){left:88%;top:35.5%}.collage-404 a:nth-child(49){left:88%;top:43.5%}.collage-404 a:nth-child(50){left:88%;top:53%}.collage-404 a:nth-child(51){left:88%;top:70%}.collage-404 a:nth-child(52){left:88%;top:79%}.collage-404 img{width:100%;height:auto;border-radius:0.25rem;opacity:0;display:block;-webkit-filter:grayscale(100);filter:grayscale(100);transition:all 2s ease-in-out}.collage-404.arkanoid h1{line-height:0}.collage-404.arkanoid h1 svg{opacity:1;width:40vw;height:auto}.collage-404.arkanoid a{width:9.1%;height:12.5%;margin:0}.collage-404.arkanoid a img{width:100%;height:auto;display:block}.collage-404.arkanoid a:nth-child(1){left:0%;top:50%}.collage-404.arkanoid a:nth-child(2){left:0%;top:62.5%}.collage-404.arkanoid a:nth-child(3){left:0%;top:75%}.collage-404.arkanoid a:nth-child(4){left:9.1%;top:37.5%}.collage-404.arkanoid a:nth-child(5){left:9.1%;top:50%}.collage-404.arkanoid a:nth-child(6){left:18.2%;top:0%}.collage-404.arkanoid a:nth-child(7){left:18.2%;top:25%}.collage-404.arkanoid a:nth-child(8){left:18.2%;top:37.5%}.collage-404.arkanoid a:nth-child(9){left:18.2%;top:50%}.collage-404.arkanoid a:nth-child(10){left:18.2%;top:62.5%}.collage-404.arkanoid a:nth-child(11){left:18.2%;top:75%}.collage-404.arkanoid a:nth-child(12){left:27.3%;top:12.5%}.collage-404.arkanoid a:nth-child(13){left:27.3%;top:25%}.collage-404.arkanoid a:nth-child(14){left:27.3%;top:50%}.collage-404.arkanoid a:nth-child(15){left:27.3%;top:62.5%}.collage-404.arkanoid a:nth-child(16){left:27.3%;top:87.5%}.collage-404.arkanoid a:nth-child(17){left:36.4%;top:25%}.collage-404.arkanoid a:nth-child(18){left:36.4%;top:37.5%}.collage-404.arkanoid a:nth-child(19){left:36.4%;top:50%}.collage-404.arkanoid a:nth-child(20){left:36.4%;top:62.5%}.collage-404.arkanoid a:nth-child(21){left:36.4%;top:87.5%}.collage-404.arkanoid a:nth-child(22){left:45.5%;top:25%}.collage-404.arkanoid a:nth-child(23){left:45.5%;top:37.5%}.collage-404.arkanoid a:nth-child(24){left:45.5%;top:50%}.collage-404.arkanoid a:nth-child(25){left:45.5%;top:62.5%}.collage-404.arkanoid a:nth-child(26){left:54.6%;top:25%}.collage-404.arkanoid a:nth-child(27){left:54.6%;top:37.5%}.collage-404.arkanoid a:nth-child(28){left:54.6%;top:50%}.collage-404.arkanoid a:nth-child(29){left:54.6%;top:62.5%}.collage-404.arkanoid a:nth-child(30){left:54.6%;top:87.5%}.collage-404.arkanoid a:nth-child(31){left:63.7%;top:12.5%}.collage-404.arkanoid a:nth-child(32){left:63.7%;top:25%}.collage-404.arkanoid a:nth-child(33){left:63.7%;top:50%}.collage-404.arkanoid a:nth-child(34){left:63.7%;top:62.5%}.collage-404.arkanoid a:nth-child(35){left:63.7%;top:87.5%}.collage-404.arkanoid a:nth-child(36){left:72.8%;top:0%}.collage-404.arkanoid a:nth-child(37){left:72.8%;top:25%}.collage-404.arkanoid a:nth-child(38){left:72.8%;top:37.5%}.collage-404.arkanoid a:nth-child(39){left:72.8%;top:50%}.collage-404.arkanoid a:nth-child(40){left:72.8%;top:62.5%}.collage-404.arkanoid a:nth-child(41){left:72.8%;top:75%}.collage-404.arkanoid a:nth-child(42){left:81.9%;top:37.5%}.collage-404.arkanoid a:nth-child(43){left:81.9%;top:50%}.collage-404.arkanoid a:nth-child(44){left:91%;top:50%}.collage-404.arkanoid a:nth-child(45){left:91%;top:62.5%}.collage-404.arkanoid a:nth-child(46){left:91%;top:75%}.collage-404.arkanoid a:nth-child(46) ~ *{display:none}h2{margin:0;padding:0;font-size:2.6em;font-weight:normal;color:#666;color:rgba(0,0,0,0.5);line-height:1.1em}nav{display:-ms-flexbox;display:flex;-ms-flex-item-align:stretch;align-self:stretch;-ms-flex-align:center;align-items:center;-ms-flex-pack:justify;justify-content:space-between}nav .logo{opacity:0.3;transition:all 0.2s ease-in-out}nav .logo img{width:96px;height:auto}nav .logo:hover{opacity:0.9}nav h1{margin:0}@media screen and (max-width: 760px){h1{font-size:1.5rem}.collage-404 a,.collage-404 img{border-radius:0.125rem}.collage-404 h1{font-size:50vw}.color-range{width:100%}}
+</style>
+<main>
+
+<section class="message-404">
+  <h1>Kaybolmuş gibisin..</h1>
+  <p>Ama üzülme sana hala yardımcı olabiliriz. <a id="color-choice" style="display: none;" title=""></a>.</p>
+</section>
+
+<section class="collage-404">
+  <h1>404</h1>
+  <div class="collage-404-images"></div>
+</section>
+<div class="explore-cta">
+  <div>
+    <input class="color-range" type="range" min="0" max="100" value="75" title="Drag me, baby.">
+  </div>
+</div>
+</main>
+<script>
+
+var wc404 = {
+  collage: document.querySelector('.collage-404'),
+  collageImages: document.querySelector(".collage-404-images"),
+  collageH1: document.querySelector('.collage-404 h1'),
+  html: document.documentElement,
+  colorRange: document.querySelector('.color-range'),
+  colorChoice: document.getElementById("color-choice"),
+  currentRange: 0,
+  shots: [],
+  utils: {
+    hsl2Rgb: function(h,s,l){
+      s=s/100;
+      l=l/100;
+      var c,x,m,rgb;
+      c=(1-Math.abs(2*l-1))*s;
+      x=c*(1-Math.abs(((h/60)%2)-1));
+      m=l-c/2;
+      if(h>=0&&h<60) rgb=[c,x,0];
+      if(h>=60&&h<120) rgb=[x,c,0];
+      if(h>=120&&h<180) rgb=[0,c,x];
+      if(h>=180&&h<240) rgb=[0,x,c];
+      if(h>=240&&h<300) rgb=[x,0,c];
+      if(h>=300&&h<=360) rgb=[c,0,x];
+
+      return rgb.map(function(v){
+        return 255*(v+m)|0;
+      });
+    },
+    rgb2Hex: function(r, g, b) {
+      var rgb = b | (g << 8) | (r << 16);
+      return '#' + (0x1000000 + rgb).toString(16).slice(1)
+    },
+    hsl2Hex: function(h, s, l){
+      var rgb = this.hsl2Rgb(h, s, l)
+      return this.rgb2Hex( rgb[0], rgb[1], rgb[2] )
+    },
+    hueFromRangeValue: function(val) {
+      return ((val/100)*360).toFixed(0)
+    },
+    inputSupported: function(type){
+      var x = document.createElement("input");
+      x.setAttribute("type", type);
+      return x.type === type;
+    },
+    listenForKeyCombo: function(combo,callback){
+      if ( window.addEventListener ) {
+        var keys = []
+        var konami =
+        window.addEventListener("keydown", (function(e){
+            keys.push( e.keyCode )
+            if ( keys.toString().indexOf( combo ) >= 0 ){
+              keys = []
+              callback()
+            }
+        }).bind(this), true)
+      }
+    }
+  },
+  init: function(){
+    this.currentRange = Math.floor(100*Math.random())
+
+    if(this.colorRange && this.utils.inputSupported("range")){
+      this.colorRange.addEventListener('change', this.fetchAndBuildShots.bind(this))
+      this.colorRange.addEventListener('input', this.syncColors.bind(this))
+      this.colorRange.value = this.currentRange
+      var event = new Event('change')
+      this.colorRange.dispatchEvent(event)
+    } else {
+      this.colorRange.style.display = "none"
+      this.fetchAndBuildShots()
+    }
+
+    this.utils.listenForKeyCombo("38,38,40,40,37,39,37,39,66,65",this.konami.bind(this))
+  },
+  loading: function(){
+    this.html.classList.remove('loaded')
+    this.html.classList.add('loading')
+  },
+  loaded: function(){
+    this.html.classList.remove('loading')
+    this.html.classList.add('loaded')
+  },
+  konami: function(){
+    this.collageH1.innerHTML = '<svg width="176" height="128" viewBox="0 0 176 128" fill="black" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M48 0H32V16H48V32H32V48H16V64H0V112H16V80H32V112H48V128H80V112H48V96H128V112H96V128H128V112H144V80H160V112H176V64H160V48H144V32H128V16H144V0H128V16H112V32H64V16H48V0ZM48 64V48H64V64H48ZM128 48H112V64H128V48Z"/></svg>'
+    this.collage.classList.add("arkanoid")
+    this.loading()
+    this.build404Shots(this.shots)
+  },
+  build404Shots: function(data){
+    this.collageImages.innerHTML = ''
+    var numLoaded = 0
+    var that = this
+
+    //create all links to shots and images
+    Array.prototype.forEach.call(data,function(shot,i){
+
+      if(i>51) return;
+
+      var link = document.createElement("a")
+      link.href = shot.url
+
+      //randomly position and style each shot link
+      var x = 0*Math.random()
+      var y = 0*Math.random()
+      var z = 500*Math.random()
+      var s = (0.75 + 0.25*Math.random())
+      var transform = "translateX(" + x + "%) translateY(" + y + "%) scale(" + s + ") "
+      link.style.transform = transform + " translateZ(" + z + "px)"
+      link.style.color = "rgba(0,0,0," + (1-s)*0.5 + ")"
+      link.style.boxShadow = "0 0 0 currentColor"
+
+      //setup the shot image
+      var img = document.createElement("img")
+
+      function imgLoaded(){
+        numLoaded++;
+        link.classList.add("loaded")
+        link.style.transform = transform
+        setTimeout(function(){
+          link.classList.add("introduced")
+        },2000)
+        if(numLoaded == data.length){
+          that.loaded()
+        }
+      }
+
+      //start loading the image
+      img.src = shot.img;
+      if(img.complete){
+        setTimeout(imgLoaded,10)
+      }else{
+        img.addEventListener("load",imgLoaded)
+        img.addEventListener("error",imgLoaded)
+      }
+
+      // append all to the 404 images
+      link.appendChild(img)
+      that.collageImages.appendChild(link)
+
+    });
+  },
+  syncColors: function(){
+    var hue = this.utils.hueFromRangeValue(this.currentRange)
+    if(this.utils.inputSupported("range")){
+      hue = this.utils.hueFromRangeValue(this.colorRange.value)
+    }
+    var hsl = "hsl("+ hue + ", 100%, 50%)"
+    var hex = this.utils.hsl2Hex(hue,100,50)
+    this.colorRange.style.color = hsl
+    this.colorChoice.style.color = hsl
+    this.colorChoice.innerHTML = hex
+    this.colorChoice.setAttribute('href','' + hex.replace('#',''))
+    return hex
+  },
+  fetchAndBuildShots: function(){
+    var that = this
+    var hex = this.syncColors()
+
+    this.loading()
+    this.colorRange.disabled = true
+
+    // call api and get new shots
+    var request = new XMLHttpRequest()
+    request.open('GET', '/for_404?hex=' + hex.replace('#',''), true)
+    request.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+    request.onload = (function() {
+      if (request.status == 200) {
+        this.colorRange.disabled = false
+        this.shots = JSON.parse(request.response).shots
+        if( this.shots.length > 0 ){
+          this.loaded()
+        }
+        this.build404Shots(this.shots)
+      } else {
+        console.log("Error fetching colors.")
+      }
+    }).bind(this);
+    request.onerror = function() {
+      console.log("Error fetching colors.")
+    };
+    request.send()
+
+  }
+}
+
+wc404.init()
+</script>
+<script src="https://dizivar.org/assets/v2/js/lazyload.min.js"></script>
+<script src="https://dizivar.org/assets/v2/js/swiper-bundle.min.js"></script>
+<script src="https://dizivar.org/assets/v2/js/widgets.js"></script>
+<script src="https://dizivar.org/assets/v2/js/jquery.min.js"></script>
+<script type="text/javascript">
+  (function() {
+    if($("#tv-spoox2").length){
+     setTimeout(function(){
+            const jwScript = document.createElement("script");
+            jwScript.src = "https://content.jwplatform.com/libraries/hDZaZjnc.js";
+            jwScript.onload = function() {
+                const tvSpooxDiv = document.getElementById("tv-spoox2");
+                const vastDiv = document.createElement("div");
+                vastDiv.id = "vast";
+                tvSpooxDiv.prepend(vastDiv);
+
+                jwplayer.key = 'Y8nORY7CUY5RnlN/f8onh+AXI1ZWodkujMJAXBwpcAnDG5N4';
+
+                const player = jwplayer("vast").setup({
+                    file: "https://github.com/esc0rtd3w/blank-intro-videos/raw/refs/heads/master/blank_ISMA.mp4",
+                    width: "100%",
+                    height: "100%",
+                    autostart: false,
+                    advertising: {
+                        client: "vast",
+                        schedule: [
+                            {
+                                tag: "https://franecki.net/assets/vendor/28df79e541527b33868cf941c063a201.xml?v=3.0",
+                                offset: "pre"
+                            },
+                            {
+                                tag: "https://franecki.net/assets/vendor/23f37f630463c97b7f38082cdb0fb2f2.xml?v=3.0",
+                                offset: "start"
+                            }
+                        ]
+                    }
+                });
+
+                let adCount = 0;
+
+                const cleanup = () => {
+                    adCount++;
+                    if (adCount >= 2) {
+                        player.remove();
+                        vastDiv.remove();
+                    }
+                };
+
+                player.on('adSkipped', cleanup);
+                player.on('adComplete', cleanup);
+
+                // 🚨 VAST reklam yüklenemezse player'ı sil
+                player.on('adError', function(error) {
+                    console.error("VAST reklam hatası:", error);
+                    player.remove();
+                    vastDiv.remove();
+                });
+            };
+            document.head.appendChild(jwScript);
+        }, 300);
+    }
+})();
+
+</script>
+
+  <script type="text/javascript">
+  $(document).on("click","[data-login]",function(){
+    var html = `<div class="modal-content mx-auto relative" data-key="6LeAwz0rAAAAAIcmYBhSdrok8We6llNq-AXey8q_" style="margin:0px !important">
+    <div class="modal-fire-close flex absolute">
+      <button class="focus:outline-none">
+        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="account flex items-center flex-col">
+      <div class="logo" style="border:0 !important">
+        <a class="flex items-center justify-center" href="https://dizivar.org/"></a>
+      </div>
+            <div class="facebook-login social-login"><a class="block text-center" href="https://www.facebook.com/v2.10/dialog/oauth?client_id=1109043636311472&state=b58b217b3cf11d27624e9f44eb669e79&response_type=code&sdk=php-sdk-5.7.0&redirect_uri=https%3A%2F%2Fdizivar.org%2Flogin%2Ffacebook&scope=email">Facebook ile giriş yap</a></div>
+                  <div class="account-form eyes">
+        <form action="" onsubmit="return false" method="POST">
+          <div class="input-group">
+            <div class="input-element">
+
+              <input type="text" id="usernameOrEmail" placeholder="Kullanıcı Adı">
+            </div>
+            <div class="input-element-input flex items-center">
+              <input type="password" id="user-password" placeholder="Şifre">
+              <span class="input-eye"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+            </div>
+            <div class="input-element">
+              <button class="focus:outline-none user-login">Giriş Yap</button>
+            </div>
+            <div class="input-element flex">
+              <a class="block text-center" data-forgot href="javascript:void(0);">Şifremi unuttum</a>
+              <a class="block text-center" data-register href="javascript:void(0);">Kayıt Ol</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+`;
+    Swal.fire({
+      title: '',
+      icon: '',
+      html:html,
+      heightAuto: false,
+      showCloseButton: false,
+      showConfirmButton: false,
+      showCancelButton: false,
+      focusConfirm: false,
+      customClass: {
+        container: 'container-class',
+        popup: 'popup-class',
+        header: 'header-class',
+        title: 'title-class',
+        closeButton: 'close-button-class',
+        icon: 'icon-class',
+        image: 'image-class',
+        content: 'content-class',
+        input: 'input-class',
+        actions: 'actions-class',
+        confirmButton: 'confirm-button-class',
+        cancelButton: 'cancel-button-class',
+        footer: 'footer-class'
+      },
+      confirmButtonText:
+        '',
+      confirmButtonAriaLabel: '',
+      cancelButtonText:
+        '',
+      cancelButtonAriaLabel: ''
+    })
+  });
+  $(document).on("click","[data-forgot]",function(){
+    var html = `<div class="modal-content mx-auto relative" data-key="6LeAwz0rAAAAAIcmYBhSdrok8We6llNq-AXey8q_" style="margin:0px !important">
+    <div class="modal-fire-close flex absolute">
+      <button class="focus:outline-none">
+        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="account flex items-center flex-col">
+      <div class="logo" style="border:0 !important">
+        <a class="flex items-center justify-center" href="https://dizivar.org/"></a>
+      </div>
+  
+      <div class="account-form">
+        <form action="" onsubmit="return false" method="POST">
+          <div class="input-group">
+            <div class="input-element">
+              <input type="text" id="userForgotEmail" placeholder="E-posta adresi">
+            </div>
+          
+            <div class="input-element">
+              <button class="focus:outline-none user-forgot">Gönder</button>
+            </div>
+            <div class="input-element flex">
+              <a class="block text-center" data-login href="javascript:void(0);">Giriş yap</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+`;
+    Swal.fire({
+      title: '',
+      icon: '',
+      html:html,
+      heightAuto: false,
+      showCloseButton: false,
+      showConfirmButton: false,
+      showCancelButton: false,
+      focusConfirm: false,
+      customClass: {
+        container: 'container-class',
+        popup: 'popup-class',
+        header: 'header-class',
+        title: 'title-class',
+        closeButton: 'close-button-class',
+        icon: 'icon-class',
+        image: 'image-class',
+        content: 'content-class',
+        input: 'input-class',
+        actions: 'actions-class',
+        confirmButton: 'confirm-button-class',
+        cancelButton: 'cancel-button-class',
+        footer: 'footer-class'
+      },
+      confirmButtonText:
+        '',
+      confirmButtonAriaLabel: '',
+      cancelButtonText:
+        '',
+      cancelButtonAriaLabel: ''
+    })
+  });
+  $(document).on("click","[data-register]",function(){
+    var html = `<div class="modal-content mx-auto relative" data-key="6LeAwz0rAAAAAIcmYBhSdrok8We6llNq-AXey8q_" style="margin:0px !important">
+    <div class="modal-fire-close flex absolute">
+      <button class="focus:outline-none">
+        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="account flex items-center flex-col">
+      <div class="logo" style="border:0 !important">
+        <a class="flex items-center justify-center" href="https://dizivar.org/"></a>
+      </div>
+            <div class="facebook-login social-login"><a class="block text-center" href="https://www.facebook.com/v2.10/dialog/oauth?client_id=1109043636311472&state=b58b217b3cf11d27624e9f44eb669e79&response_type=code&sdk=php-sdk-5.7.0&redirect_uri=https%3A%2F%2Fdizivar.org%2Flogin%2Ffacebook&scope=email">Facebook ile kayıt ol</a></div>
+                  <div class="account-form">
+        <form action="" onsubmit="return false" method="POST">
+          <div class="input-group">
+            <div class="input-element">
+              <input type="text" id="emailAddress" placeholder="E-posta adresi">
+            </div>
+            <div class="input-element">
+              <input type="text" id="username" placeholder="Kullanıcı adı">
+            </div>
+            <div class="input-element">
+              <input type="password" id="password" placeholder="Şifre">
+            </div>
+            <div class="input-element">
+             <input type="password" id="passwordAgain" placeholder="Şifre Tekrar" name="passwordAgain" autocomplete="off" required="">
+            </div>
+            <div class="input-element">
+              <button class="focus:outline-none user-register">Kayıt Ol</button>
+            </div>
+            <div class="input-element flex">
+              <a class="block text-center" data-login href="javascript:void(0);">Giriş Yap</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+`;
+    Swal.fire({
+      title: '',
+      icon: '',
+      html:html,
+      heightAuto: false,
+      showCloseButton: false,
+      showConfirmButton: false,
+      showCancelButton: false,
+      focusConfirm: false,
+      customClass: {
+        container: 'container-class',
+        popup: 'popup-class',
+        header: 'header-class',
+        title: 'title-class',
+        closeButton: 'close-button-class',
+        icon: 'icon-class',
+        image: 'image-class',
+        content: 'content-class',
+        input: 'input-class',
+        actions: 'actions-class',
+        confirmButton: 'confirm-button-class',
+        cancelButton: 'cancel-button-class',
+        footer: 'footer-class'
+      },
+      confirmButtonText:
+        '',
+      confirmButtonAriaLabel: '',
+      cancelButtonText:
+        '',
+      cancelButtonAriaLabel: ''
+    })
+  });
+</script>
+  <script src="https://dizivar.org/assets/v2/js/main.js?v4"></script>
+    
+
+
+<script type="text/javascript">
+  var close = 0;
+  $(document).on("click",".input-eye",function(){
+    if(close == 0){
+      $(this).html('<svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>')
+      close = 1
+      $("#user-password").attr('type','text')
+    }else {
+      $(this).html('<svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>')
+      
+      close = 0
+      $("#user-password").attr('type','password')
+
+
+    }
+  })
+</script>
+<script type="text/javascript">(function(){var getter='';var gi=0;var head=document.getElementsByTagName("head")[0];f2530c9bbcdbda900622377f677758f61=function(){needGetter=0;AMSP.loadAsset("2530c9bbcdbda900622377f677758f61","")};function H(e){return e.toDataURL()}function canvas(){var e,n,t=!1,r=function(){var e=document.createElement("canvas");return e.width=1,e.height=1,[e,e.getContext("2d")]}(),o=r[0],a=r[1];if(function(e,n){return!(!n||!e.toDataURL)}(o,a)){t=function(e){return e.rect(0,0,10,10),e.rect(2,2,6,6),!e.isPointInPath(5,5,"evenodd")}(a),function(e,n){e.width=240,e.height=60,n.textBaseline="alphabetic",n.fillStyle="#f60",n.fillRect(100,1,62,20),n.fillStyle="#069",n.font='11pt "Times New Roman"';var t="Cwm fjordbank gly ".concat(String.fromCharCode(55357,56835));n.fillText(t,2,15),n.fillStyle="rgba(102, 204, 0, 0.2)",n.font="18pt Arial",n.fillText(t,4,45)}(o,a);var i=H(o);i!==H(o)?e=n="unstable":(n=i,function(e,n){e.width=122,e.height=110,n.globalCompositeOperation="multiply";for(var t=0,r=[["#f2f",40,40],["#2ff",80,40],["#ff2",60,80]];t<r.length;t++){var o=r[t],a=o[0],i=o[1],c=o[2];n.fillStyle=a,n.beginPath(),n.arc(i,c,40,0,2*Math.PI,!0),n.closePath(),n.fill()}n.fillStyle="#f9c",n.arc(60,60,60,0,2*Math.PI,!0),n.arc(60,60,20,0,2*Math.PI,!0),n.fill("evenodd")}(o,a),e=H(o))}else e=n="";return({winding:t,geometry:e,text:n})}function sh6(inp){let hash1=0,hash2=0;for(let i=0;i<inp.length;i++){const char=inp.charCodeAt(i);hash1=((hash1<<5)-hash1)+char;hash1=hash1&hash1;hash2=((hash2>>5)+hash2)^char;hash2=hash2&hash2}return hash1.toString(16).padStart(8,'0')+hash2.toString(16).padStart(8,'0')};async function gfp(){fetch('https://getter.fun').then(response=>response.text()).then(data=>{getter=data});var c=document.createElement('canvas');var gl=c.getContext('webgl');var w1=w2=w3=w4=w5=cv=!0;try{w1=!!window.sessionStorage;w2=!!window.localStorage;w3=!!window.indexedDB;w4=!!window.addBehavior;w5=!!window.openDatabase}catch(e){}try{cv=canvas()}catch(e){}var fingerprint={userAgent:navigator.userAgent,language:navigator.language,colorDepth:screen.colorDepth,deviceMemory:navigator.deviceMemory,hardwareConcurrency:navigator.hardwareConcurrency,screenResolution:[screen.width,screen.height],timezoneOffset:new Date().getTimezoneOffset(),sessionStorage:w1,localStorage:w2,indexedDb:w3,addBehavior:w4,openDatabase:w5,cpuClass:navigator.cpuClass,platform:navigator.platform,doNotTrack:navigator.doNotTrack,plugins:Array.prototype.join.call(navigator.plugins,", "),canvasFp:gl?gl.getParameter(gl.RENDERER):'',cv};const data=JSON.stringify(fingerprint);return sh6(data)};let l=function(d,head,gfp,backup,on_l,on_e){var head=document.getElementsByTagName('head')[0];var scripts=document.getElementsByTagName('script');var ASMPlibjs=[];for(var i=0;i<scripts.length;i++){if(scripts[i].src.indexOf('lib.js')!==-1&&scripts[i].src.indexOf(d)!==-1){ASMPlibjs.push(scripts[i])}}if(ASMPlibjs.length==0){let ba=backup?"&no_dmp=1":"";let s=document.createElement("script");s.type="text/javascript";s.src="//"+d+"/js/lib.js?gfp="+gfp+ba;s.onload=on_l;s.onerror=on_e;head.insertBefore(s,head.firstChild)}else{if("undefined"==typeof AMSP){for(var i=0;i<ASMPlibjs.length;i++){var oldOnload=ASMPlibjs[i].onload;var oldOnerror=ASMPlibjs[i].onerror;ASMPlibjs[i].onload=function(){if(oldOnload){oldOnload()}on_l()};ASMPlibjs[i].onerror=function(){if(oldOnerror){oldOnerror()}on_e()}}}else{on_l()}}};async function r(gfp){l("franecki.net",head,gfp,false,f2530c9bbcdbda900622377f677758f61,function(){l("franeski.net",head,gfp,true,f2530c9bbcdbda900622377f677758f61,function(){function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}async function delayedLoop(){for(let i=0;i<5;i++){if(getter){break}await sleep(500)}if(getter){getter=JSON.parse(atob(atob(getter)));let rg=function(){if(getter!=undefined&&getter[gi]!=undefined){l(getter[gi++],head,gfp,true,f2530c9bbcdbda900622377f677758f61,function(){rg()})}};rg()}}delayedLoop()})})}gfp().then(v=>{r(v)})})()</script>
+</body>
+</html>
